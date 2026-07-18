@@ -328,7 +328,8 @@
         btn2.setAttribute('style', 'pointer-events: none; background-color: #9e9e9e;');
 
         try {
-            const response = await fetch('http://localhost:3000/api/split-link', {
+            // ĐÃ SỬA: Đổi từ 'http://localhost:3000/api/split-link' thành đường dẫn tương đối '/api/split-link'
+            const response = await fetch('/api/split-link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: url })
