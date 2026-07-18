@@ -15,6 +15,30 @@ const MY_AFFILIATE_ID = "17344490003";
 // BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
 const resolvedLinksCache = {};
 
+// ==================== ENDPOINT MỚI: BỐC VOUCHER ĐỘNG CHO FRONTEND VẼ UI ====================
+app.get('/api/vouchers', async (req, res) => {
+    try {
+        // Gọi đến API quét mã của hệ thống đối tác
+        // Lưu ý: Thay đổi URL dưới đây thành endpoint thực tế khi bạn deploy nhé
+        const response = await axios.get('https://api.domain-doi-tac.com/get-vouchers', {
+            timeout: 5000
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+            // Trả toàn bộ mảng chứa danh sách voucher động về cho Frontend
+            return res.json({
+                success: true,
+                vouchers: response.data
+            });
+        }
+
+        return res.json({ success: false, message: "Không phân tích được danh sách voucher" });
+    } catch (error) {
+        console.log("⚠️ Lỗi fetch dữ liệu voucher động:", error.message);
+        return res.json({ success: false, message: error.message });
+    }
+});
+
 // ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
 app.post('/api/product-info', async (req, res) => {
     try {
@@ -63,6 +87,7 @@ app.post('/api/split-link', async (req, res) => {
         let step1VoucherLink = ""; 
 
         // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
+        // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
         try {
             const salesocResponse = await axios.post('https://salesoc.vn/api/convert-with-shelf', {
                 url: url,
