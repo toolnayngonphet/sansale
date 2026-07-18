@@ -41,12 +41,16 @@ app.post('/api/split-link', async (req, res) => {
             if (salesocResponse && salesocResponse.data && salesocResponse.data.success === true) {
                 const data = salesocResponse.data;
                 
-                // THUẬT TOÁN ƯU TIÊN MỚI: Đẩy affipadShortUrl (link shp.ee) lên ưu tiên số 1
-                step1VoucherLink = data.affipadShortUrl || 
-                                   data.shortFacebookAffiliateUrl || 
-                                   data.facebookAffiliateUrl || 
-                                   data.affiliateUrl || 
-                                   url;
+                // THUẬT TOÁN ĐƯỢC ÉP LẠI CHẶT CHẼ: Kiểm tra đích danh trường affipadShortUrl trước
+                if (data.affipadShortUrl && data.affipadShortUrl.trim() !== "") {
+                    step1VoucherLink = data.affipadShortUrl; // Ép lấy chuẩn link https://shp.ee/...
+                } else {
+                    // Nếu hoàn toàn không có affipadShortUrl thì mới dự phòng theo thứ tự dưới này
+                    step1VoucherLink = data.shortFacebookAffiliateUrl || 
+                                       data.facebookAffiliateUrl || 
+                                       data.affiliateUrl || 
+                                       url;
+                }
             }
         } catch (apiErr) {
             // Khi Salesoc chặn IP local hoặc dính lỗi kết nối, log ra màn hình console của bạn để theo dõi
