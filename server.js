@@ -12,6 +12,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CẤU HÌNH CỦA BẠN
 const MY_AFFILIATE_ID = "17344490003"; 
 
+// BỘ NHỚ LƯU TRỮ LINK RÚT GỌN TẠM THỜI (In-Memory Object)
+const shortLinksStorage = {};
+
+// HÀM TẠO CHUỖI NGẪU NHIÊN LÀM MÃ RÚT GỌN
+function generateRandomCode(length = 6) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
 // ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
 app.post('/api/product-info', async (req, res) => {
     try {
@@ -102,7 +115,18 @@ app.post('/api/split-link', async (req, res) => {
         }
 
         // BƯỚC 2: Cập nhật dấu & nối chuẩn theo tài liệu Shopee và bỏ hoàn toàn sub_id
-        const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
+        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
+
+        // ==================== TIẾN HÀNH RÚT GỌN NỘI BỘ BƯỚC 2 ====================
+        const shortCode = generateRandomCode(6); // Sinh mã 6 ký tự ngẫu nhiên
+        shortLinksStorage[shortCode] = step2RawLink; // Ánh xạ mã vào link đích thô
+        
+        // Lấy host và protocol động (Tự thích ứng cả localhost lẫn domain deploy chính thức)
+        const hostUrl = req.get('host'); 
+        const protocol = req.protocol; 
+        
+        // Tạo liên kết rút gọn hiển thị bằng chính tên miền của bạn
+        const step2AffiliateLink = `${protocol}://${hostUrl}/r/${shortCode}`;
 
         // BẮT BUỘC LUÔN PHẢI TRẢ VỀ JSON HỢP LỆ CHO FRONTEND ĐỂ KHÔNG BỊ LỖI PHÂN TÍCH CÚ PHÁP
         return res.json({
@@ -118,6 +142,20 @@ app.post('/api/split-link', async (req, res) => {
             step1: req.body.url || "https://shopee.vn", 
             step2: `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(req.body.url || '')}&affiliate_id=${MY_AFFILIATE_ID}` 
         });
+    }
+});
+
+// ==================== ENDPOINT ĐIỀU HƯỚNG GIẢI MÃ LINK RÚT GỌN ====================
+// Khi khách truy cập dạng domain.com/r/ABCXYZ, hệ thống bốc link thô và tự động redirect (302) sang Shopee
+app.get('/r/:code', (req, res) => {
+    const code = req.params.code;
+    const targetRawLink = shortLinksStorage[code];
+
+    if (targetRawLink) {
+        return res.redirect(targetRawLink);
+    } else {
+        // Dự phòng nếu không tìm thấy mã, đẩy thẳng sang trang chủ Shopee
+        return res.redirect('https://shopee.vn');
     }
 });
 
