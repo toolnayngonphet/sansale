@@ -1,8 +1,10 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+const cors = require('cors'); // Bổ sung để hỗ trợ Frontend gọi API mượt mà không lo bị chặn
 const app = express();
 
+app.use(cors()); // Kích hoạt CORS cho phép mọi nguồn kết nối đến API này
 app.use(express.json());
 // Phục vụ giao diện frontend nằm trong thư mục public
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,9 +39,13 @@ app.post('/api/split-link', async (req, res) => {
 
             // Kiểm tra kỹ cấu trúc dữ liệu trả về từ Salesoc trước khi bóc tách
             if (salesocResponse && salesocResponse.data && salesocResponse.data.success === true) {
-                step1VoucherLink = salesocResponse.data.shortFacebookAffiliateUrl || 
-                                   salesocResponse.data.facebookAffiliateUrl || 
-                                   salesocResponse.data.affiliateUrl || 
+                const data = salesocResponse.data;
+                
+                // THUẬT TOÁN ƯU TIÊN MỚI: Đẩy affipadShortUrl (link shp.ee) lên ưu tiên số 1
+                step1VoucherLink = data.affipadShortUrl || 
+                                   data.shortFacebookAffiliateUrl || 
+                                   data.facebookAffiliateUrl || 
+                                   data.affiliateUrl || 
                                    url;
             }
         } catch (apiErr) {
