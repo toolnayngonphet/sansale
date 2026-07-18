@@ -15,9 +15,6 @@ const MY_AFFILIATE_ID = "17344490003";
 // BỘ NHỚ LƯU TRỮ LINK RÚT GỌN TẠM THỜI (In-Memory Object)
 const shortLinksStorage = {};
 
-// BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn sang link dài lấy từ Addlivetag
-const resolvedLinksCache = {};
-
 // HÀM TẠO CHUỖI NGẪU NHIÊN LÀM MÃ RÚT GỌN
 function generateRandomCode(length = 6) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -42,12 +39,6 @@ app.post('/api/product-info', async (req, res) => {
 
         if (prodResponse.data && prodResponse.data.status === "success") {
             const info = prodResponse.data.productInfo;
-            
-            // BẮT TRÚNG TRƯỜNG productLink ĐỂ ĐÈ ĐƯỜNG DẪN DÀI VÀO CACHE
-            if (info && info.productLink) {
-                resolvedLinksCache[url.trim()] = info.productLink;
-                console.log(`🎯 Đã lưu cache link dài từ Addlivetag: ${info.productLink}`);
-            }
             
             // TUYỆT ĐỐI KHÔNG TRẢ VỀ: commission, sellerComFinal, shopeeComFinal để giấu khách hoàn toàn
             return res.json({
@@ -123,11 +114,8 @@ app.post('/api/split-link', async (req, res) => {
             }
         }
 
-        // ==================== TỐI ƯU BƯỚC 2: SỬ DỤNG LINK DÀI ĐỂ TRỊ LỖI OOPS ====================
-        // Ưu tiên dùng link dài bốc từ Addlivetag đã lưu trong cache, nếu chưa có mới dùng url gốc
-        const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
-
-        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
+        // BƯỚC 2: Cập nhật dấu & nối chuẩn theo tài liệu Shopee và bỏ hoàn toàn sub_id
+        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
 
         // ==================== TIẾN HÀNH RÚT GỌN NỘI BỘ BƯỚC 2 ====================
         const shortCode = generateRandomCode(6); // Sinh mã 6 ký tự ngẫu nhiên
