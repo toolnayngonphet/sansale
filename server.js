@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const path = require('path');
 const cors = require('cors'); // Bổ sung để hỗ trợ Frontend gọi API mượt mà không lo bị chặn
-const { exec } = require('child_process'); // Kích hoạt module chạy tiến trình lệnh song song để gọi file Python
 const app = express();
 
 app.use(cors()); // Kích hoạt CORS cho phép mọi nguồn kết nối đến API này
@@ -19,7 +18,7 @@ let ADMIN_COOKIES = {
     csrf_token: "8wrDz62t-DnE_rj3vAwgLj2VBUwmEIzM8XDQ",
     sz_token: "Lqe4znIGqXlMPt+5OiJsNQ==|NO4bP1oa/ATvw0TYEv6biSXgubE96Mf2Ms4JsVcf4YxnqoVwq+h37iegPHALVYWLP5y1FoKIjfn5Dns=|NOV5xa1Y9Grkeu4n|08|3",
     sap_ri: "899e5b6ac702b4bfa9ac88330501d5c752bb320beb3b35a7cace",
-    sap_sec: "xCTHI5N/llNzCjAHGlRHGjHHcldJGjHHVlRZGf6HvldCGzbHwIRrGfAHuDcKGm5H7lRXGzwH9lRwGjrH2QRAGxpH/QcHGy5HUldxGaVHCldpGibH0IdfGa6HZIRjGx5H6lcuGy6HAldwGZRHWlc1GxjHaIRRGiRH2ldIGxAHNlRVGguHTQdGGlRHPl6HGlRHGl+4fmKpGlRHkFYa+AOuGQRHGlRHzk66ouiHGQRHtl2HGYd3HfzHGxJbnl6HGlRHCj2HGfdHGlQV1RAeGlRHn/SIWlRHGGzeGlRVGIRHIkLJ5IRHGfirGDRHyl2HGlRHfyBv3uGqGlRHE8xJqpVAGDRHGlQOz55SGldSbQRsXPkkqOy9GGvXGQRHGlQQoF5EGlQHGDRHGaoLTse38IafXqr6Glcp1ojHGlRPevP1zJp7wzoVfFp8Bu2A4lqiWSOVN4Cj87/DLtvq2TRexpzk1vARvUKrBebr+smcRnO8riM1OJiaDYF1d7k7Nkm0EkwP7nG/efu7AkgDB5A+UfSiPYIkaYrEDgclJooD8TuYjqUMloClxo0OWHVAl/TktDPn24lUKAoUL81RKxjBP4Jyy/Kbkb729NfLQ7+ITpivJE/9V0NJzHLYNzuvV32T72yAAnco6MkqqnuLh95b5aaM/afxlC3aiHAQSFjFnhPMmnQRqAXs+yWPLNLM3MQE6yBWOScp0moieMraVf/s9Xj7E5FPCIRHGlzHGlcmSsebUsIaGl5HGlcyNKekMIRHGmuFuNDB5NQkgkc+MlinAP9W6R+D+clTyrl/xqnjiaGD8zeYb7CK4wPfbJ2VafJ28eJ/vJkFQ45I6SfY988w0I2Z48fszQ2WqPy6BzVv7AamiMVlSJA/p8FRPihZ8LBCGmI1gWwtNRIMkuck3AgGTVQG0NzShe5g8NI8LfKhaBcsJbFrdg9mpkdwxllEitrY/lHxd1c86Tog37hg7e4U7e/vSdVHClRHGyd7vwHrGlRH59nVTkzX+sstFoofGlRHGlRHGlRHGlRHvlRHGxjO3QpEyVPy7Qm7GQpadVgMwZNeC5Wc3/V8B4zvyntv3iBtArR9dtnzzqklDd8Wh2yY4iweDYt3N5OtYrpXdvMla0R2DRW9KZow2NYFytfp0jQu8QRHGlRHGlRHGlRHGm2HGlcTfH2UjNIjLS9WBd2T9um3ORhlGy5HGlQifo0lDyG83okYPr9xmafHN4/zjN28NGZXfYAFgd8qha9YQjjHGlRHzlRHGwTCON9Gj7G3N4hbjddl+nBjF02TfXtD/wizPj9wialp5jBVAj694CP9F0kzgdIlhp+CQrbvi2U2GlRHGlzHGld/wAHgHFF+IIRHGlRHGlRHaQRHGg9aLDbXI6I3wuEeYWu8yq5CFuw0url+THKeG+BrsIRHwlRHGCySEWYhaUWCwlRHGz2b8Rzbli0UGlRHGC=="
+    sap_sec: "xCTHI5N/llNzCjAHGlRHGjHHcldJGjHHVlRZGf6HvldCGzbHwIRrGfAHuDcKGm5H7lRXGzwH9lRwGjrH2QRAGxpH/QcHGy5HUldxGaVHCldpGibH0IdfGa6HZIRjGx5H6lcuGy6HAldwGZRHWlc1GxjHaIRRGiRH2ldIGxAHNlRVGguHTQdGGlRHPl6HGlRHGl+4fmKpGlRHkFYa+AOuGQRHGlRHzk66ouiHGQRHtl2HGYd3HfzHGxJbnl6HGlRHCj2HGfdHGlQV1RAeGlRHn/SIWlRHGGzeGlRVGIRHIkLJ5IRHGfirGDRHyl2HGlRHfyBv3uGqGlRHE8xJqpVAGDRHGlQOz55SGldSbQRsXPkkqOy9GGvXGQRHGlQQoF5EGlQHGDRHGaoLTse38IafXqr6Glcp1ojHGlRPevP1zJp7wzoVfFp8Bu2A4lqiWSOVN4Cj87/DLtvq2TRexpzk1vARvUKrBebr+smcRnO8riM1OJiaDYF1d7k7Nkm0EkwP7nG/efu7AkgDB5A+UfSiPYIkaYrEDgclJooD8TuYjqUMloClxo0OWHVAl/TktDPn24lUKAoUL81RKxjBP4Jyy/Kbkb729NfLQ7+ITpivJE/9V0NJzHLYNzuvV32T72yAAnco6MkqqnuLh95b5aaM/afxlC3aiHAQSFjFnhPMmnQRqAXs+yWPLNLM3MQE6yBWOScp0moieMraVf/s9Xj7E5FPCIRHGlzHGlcmSsebUsIaGl5HGlcyNKekMIRHGmuFuNDB5NQkgkc+MlinAP9W6R+D+clTyrl/xqnjiaGD8zeYb7CK4wPfbJ2VafJ28eJ/vJkFQ45I6SfY988w0I2Z48fszQ2WqPy6BzVv7AamiMVlSJA/p8FRPihZ8LBCGmI1gWwtNRIMkuck3AgGTVQG0NzShe5g8NI8LfKhaBcsJbFrdg9mpkdwxllEitrY/lHxd1c86Tog37hg7e4U7e/vSdVHClRHGyd7vwHrGlRH59nVTkzX+sstFoofGlRHGlRHGlRHGlRHvlRHGxjO3QpEyVPy7Qm7GQpadVgMwZNeC5Wc3/V8B4zvyntv3iBtArR9dtnzzqklDd8Wh2yY4iweDYt3Y4iweDYt3N5OtYrpXdvMla0R2DRW9KZow2NYFytfp0jQu8QRHGlRHGlRHGlRHGm2HGlcTfH2UjNIjLS9WBd2T9um3ORhlGy5HGlQifo0lDyG83okYPr9xmafHN4/zjN28NGZXfYAFgd8qha9YQjjHGlRHzlRHGwTCON9Gj7G3N4hbjddl+nBjF02TfXtD/wizPj9wialp5jBVAj694CP9F0kzgdIlhp+CQrbvi2U2GlRHGlzHGld/wAHgHFF+IIRHGlRHGlRHaQRHGg9aLDbXI6I3wuEeYWu8yq5CFuw0url+THKeG+BrsIRHwlRHGCySEWYhaUWCwlRHGz2b8Rzbli0UGlRHGC=="
 };
 
 // API ADMIN ĐẶC QUYỀN: Dùng để làm cổng cập nhật Token mới từ xa mà không phải sửa code hay xóa server
@@ -35,7 +34,7 @@ app.post('/api/admin/update-cookie', (req, res) => {
     return res.json({ success: true, message: 'Cấu hình cập nhật thông tin Cookie thành công!' });
 });
 
-// ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
+// ROUTE TRUNG GIAN BỐC THÔNG TIN SẢN PHẨM GIẤU HOA HỒNG
 app.post('/api/product-info', async (req, res) => {
     try {
         const { url } = req.body;
@@ -50,7 +49,6 @@ app.post('/api/product-info', async (req, res) => {
         if (prodResponse.data && prodResponse.data.status === "success") {
             const info = prodResponse.data.productInfo;
             
-            // TUYỆT ĐỐI KHÔNG TRẢ VỀ: commission, sellerComFinal, shopeeComFinal để giấu khách hoàn toàn
             return res.json({
                 success: true,
                 productName: info.productName,
@@ -74,11 +72,10 @@ app.post('/api/split-link', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vui lòng cung cấp link Shopee' });
         }
 
-        // Mặc định ban đầu: Nếu luồng lấy voucher lỗi, ta trả luôn link gốc cho Bước 1 để tránh sập giao diện
         let step1VoucherLink = url; 
         let step2AffiliateLink = "";
 
-        // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
+        // ==================== BƯỚC 1: LẤY VOUCHER TỪ SALESOC ====================
         try {
             const salesocResponse = await axios.post('https://salesoc.vn/api/convert-with-shelf', {
                 url: url,
@@ -90,26 +87,14 @@ app.post('/api/split-link', async (req, res) => {
                     'Origin': 'https://salesoc.vn',
                     'Referer': 'https://salesoc.vn/'
                 },
-                timeout: 8000 // TĂNG LÊN 8 GIÂY: Tránh tình trạng mạng kết nối quốc tế từ Railway về VN bị nghẽn
+                timeout: 8000
             });
 
-            // Kiểm tra kỹ cấu trúc dữ liệu trả về từ Salesoc trước khi bóc tách
             if (salesocResponse && salesocResponse.data && salesocResponse.data.success === true) {
                 const data = salesocResponse.data;
-                
-                // ==================== KHU VỰC DEBUG HỆ THỐNG ====================
-                console.log("\n=================== SALESOC DATA DEBUG ===================");
-                console.log("👉 Link bạn nhập vào (url):", url);
-                console.log("👉 Link rút gọn Shopee (affipadShortUrl):", data.affipadShortUrl || "N/A (RỖNG)");
-                console.log("👉 Link Facebook ngắn (shortFacebookAffiliateUrl):", data.shortFacebookAffiliateUrl || "N/A (RỖNG)");
-                console.log("==========================================================\n");
-                // ================================================================
-
-                // THUẬT TOÁN ĐƯỢC ÉP LẠI CHẶT CHẼ: Kiểm tra đích danh trường affipadShortUrl trước
                 if (data.affipadShortUrl && data.affipadShortUrl.trim() !== "") {
-                    step1VoucherLink = data.affipadShortUrl; // Ép lấy chuẩn link https://shp.ee/...
+                    step1VoucherLink = data.affipadShortUrl; 
                 } else {
-                    // Nếu hoàn toàn không có affipadShortUrl thì mới dự phòng theo thứ tự dưới này
                     step1VoucherLink = data.shortFacebookAffiliateUrl || 
                                        data.facebookAffiliateUrl || 
                                        data.affiliateUrl || 
@@ -117,44 +102,60 @@ app.post('/api/split-link', async (req, res) => {
                 }
             }
         } catch (apiErr) {
-            console.log('⚠️ Không lấy được voucher từ Salesoc (Có thể bị chặn Cloudflare/CORS):', apiErr.message);
-            
-            // CƠ CHẾ DỰ PHÒNG THÔNG MINH: Nếu link gốc nhập vào dạng s.shopee.vn, giữ nguyên làm Bước 1 luôn
+            console.log('⚠️ Không lấy được voucher từ Salesoc, giữ link gốc làm b1:', apiErr.message);
             if (url.includes('s.shopee.vn') || url.includes('shp.ee')) {
                 step1VoucherLink = url;
             }
         }
 
-        // ==================== BƯỚC 2: GỌI TIẾN TRÌNH PYTHON ĐỂ CHUYỂN LINK BẰNG COOKIE DỰ PHÒNG ====================
-        // Đóng gói payload nạp liên kết động của khách hàng cùng bộ Cookie hiện tại
-        const pythonPayload = JSON.stringify({ url: url, ...ADMIN_COOKIES });
-        
-        // Khởi chạy Promise để theo dõi tiến trình cmd thực thi mã Python của worker
-        const runPythonWorker = () => {
-            return new Promise((resolve) => {
-                const safePayload = pythonPayload.replace(/"/g, '\\"'); // Tránh vỡ chuỗi tham số dòng lệnh
-                
-                exec(`python3 shopee_worker.py "${safePayload}"`, (error, stdout, stderr) => {
-                    if (error) return resolve({ success: false });
-                    try {
-                        const parsed = JSON.parse(stdout.trim());
-                        resolve(parsed);
-                    } catch (e) {
-                        resolve({ success: false });
-                    }
-                });
+        // ==================== BƯỚC 2: TỰ BÓC LINK ĐỘNG BẰNG AXIOS NODEJS THUẦN ====================
+        try {
+            const shopeeGqlUrl = "https://affiliate.shopee.vn/api/v3/gql?q=batchCustomLink";
+            
+            const gqlPayload = {
+                "operationName": "batchGetCustomLink",
+                "query": "\n    query batchGetCustomLink($linkParams: [CustomLinkParam!], $sourceCaller: SourceCaller){\n      batchCustomLink(linkParams: $linkParams, sourceCaller: $sourceCaller){\n        shortLink\n        longLink\n        failCode\n      }\n    }\n    ",
+                "variables": {
+                    "linkParams": [{ "originalLink": url, "advancedLinkParams": {} }], // Chèn link động của khách vào đây
+                    "sourceCaller": "CUSTOM_LINK_CALLER"
+                }
+            };
+
+            const shopeeResponse = await axios.post(shopeeGqlUrl, gqlPayload, {
+                headers: {
+                    "accept": "application/json, text/plain, */*",
+                    "accept-language": "vi,vi-VN;q=0.9,fr-FR;q=0.8",
+                    "content-type": "application/json; charset=UTF-8",
+                    "affiliate-program-type": "1",
+                    "cookie": ADMIN_COOKIES.cookie,
+                    "csrf-token": ADMIN_COOKIES.csrf_token,
+                    "af-ac-enc-dat": "d2b12a7da674dc28",
+                    "af-ac-enc-sz-token": ADMIN_COOKIES.sz_token,
+                    "x-sap-ri": ADMIN_COOKIES.sap_ri,
+                    "x-sap-sec": ADMIN_COOKIES.sap_sec,
+                    "x-sz-sdk-version": "1.12.21",
+                    "origin": "https://affiliate.shopee.vn",
+                    "referer": "https://affiliate.shopee.vn/offer/custom_link",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+                },
+                timeout: 7000
             });
-        };
 
-        const pythonResult = await runPythonWorker();
+            if (shopeeResponse && shopeeResponse.data && shopeeResponse.data.data) {
+                const dataList = shopeeResponse.data.data.batchCustomLink || [];
+                if (dataList.length > 0 && dataList[0].shortLink) {
+                    console.log("🎯 Bóc link ngắn chính chủ động thành công hoàn toàn bằng Node.js!");
+                    step2AffiliateLink = dataList[0].shortLink; // Gán link rút gọn chuẩn dạng s.shopee.vn/xxxx
+                }
+            }
+        } catch (shopeeErr) {
+            console.log("⚠️ Lỗi gọi API Shopee trực tiếp từ Node.js (Có thể do hết hạn/Cloudflare):", shopeeErr.message);
+        }
 
-        if (pythonResult && pythonResult.success) {
-            // [TRƯỜNG HỢP 1]: Cookie LIVE -> Đớp link ngắn chính chủ cực đẹp của hệ thống dạng https://s.shopee.vn/xxxx
-            console.log("🎯 Chuyển đổi link bằng cơ chế Cookie LIVE thành công!");
-            step2AffiliateLink = pythonResult.shortLink;
-        } else {
-            // [TRƯỜNG HỢP 2 - FALLBACK]: Cookie DIE/Lỗi Token -> Kích hoạt thuật toán tạo link thô nối dấu & chuẩn xác của bạn
-            console.log("⚠️ Cookie Admin DIE hoặc lỗi mã bảo mật! Kích hoạt cơ chế FALLBACK tự tạo link thô ăn hoa hồng...");
+        // ==================== CƠ CHẾ DỰ PHÒNG CHỐNG SẬP (FALLBACK) ====================
+        // Nếu luồng gọi API Shopee ở trên thất bại hoặc Cookie bị lỗi, tự nhảy về cơ chế sinh link thô
+        if (!step2AffiliateLink) {
+            console.log("⚠️ Trình tự tự động lỗi/hết hạn Cookie! Kích hoạt cơ chế FALLBACK tự tạo link thô ăn hoa hồng...");
             step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
         }
 
@@ -177,5 +178,5 @@ app.post('/api/split-link', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`);
+    console.log(`Hệ thống phân luồng săn sale Node.js thuần đang chạy tại cổng: ${PORT}`);
 });
