@@ -121,6 +121,63 @@ app.post('/api/split-link', async (req, res) => {
     }
 });
 
+// ==================== KHU VỰC THỬ NGHIỆM RIÊNG (TEST BOX) ====================
+// Route chạy độc lập hoàn toàn để test bóc tách link ngắn động qua API GQL của Shopee
+app.post('/api/test-shopee-gql', async (req, res) => {
+    try {
+        const { url, cookie, csrf_token, sz_token, sap_ri, sap_sec } = req.body;
+        
+        if (!url || !cookie || !csrf_token) {
+            return res.status(400).json({ success: false, message: 'Thiếu tham số URL, Cookie hoặc CSRF-Token đầu vào!' });
+        }
+
+        const shopeeGqlUrl = "https://affiliate.shopee.vn/api/v3/gql?q=batchCustomLink";
+        const gqlPayload = {
+            "operationName": "batchGetCustomLink",
+            "query": "\n    query batchGetCustomLink($linkParams: [CustomLinkParam!], $sourceCaller: SourceCaller){\n      batchCustomLink(linkParams: $linkParams, sourceCaller: $sourceCaller){\n        shortLink\n        longLink\n        failCode\n      }\n    }\n    ",
+            "variables": {
+                "linkParams": [{ "originalLink": url, "advancedLinkParams": {} }],
+                "sourceCaller": "CUSTOM_LINK_CALLER"
+            }
+        };
+
+        console.log("🚀 [Test GQL] Đang gửi request sang Shopee...");
+        const shopeeResponse = await axios.post(shopeeGqlUrl, gqlPayload, {
+            headers: {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "vi,vi-VN;q=0.9,fr-FR;q=0.8",
+                "content-type": "application/json; charset=UTF-8",
+                "affiliate-program-type": "1",
+                "cookie": cookie,
+                "csrf-token": csrf_token,
+                "af-ac-enc-dat": "d2b12a7da674dc28",
+                "af-ac-enc-sz-token": sz_token,
+                "x-sap-ri": sap_ri,
+                "x-sap-sec": sap_sec,
+                "x-sz-sdk-version": "1.12.21",
+                "origin": "https://affiliate.shopee.vn",
+                "referer": "https://affiliate.shopee.vn/offer/custom_link",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+            },
+            timeout: 8000
+        });
+
+        return res.json({
+            success: true,
+            status: shopeeResponse.status,
+            shopeeData: shopeeResponse.data
+        });
+
+    } catch (error) {
+        console.log("❌ [Test GQL] Gặp lỗi khi gửi request:", error.message);
+        return res.json({
+            success: false,
+            message: error.message,
+            responseErrorData: error.response ? error.response.data : "No response data"
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`);
