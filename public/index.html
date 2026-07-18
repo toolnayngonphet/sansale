@@ -9,7 +9,6 @@
         .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
         
-        /* CẬP NHẬT: KHU VỰC Ô NHẬP LINK CÓ NÚT DÁN */
         .input-group { position: relative; display: flex; align-items: center; margin: 10px 0; }
         input { width: 100%; padding: 15px 75px 15px 15px; box-sizing: border-box; border-radius: 6px; font-size: 15px; border: 1px solid #ccc; }
         input:focus { border-color: #ee4d2d; outline: none; }
@@ -17,15 +16,12 @@
         .btn-paste { position: absolute; right: 10px; background-color: #f0f0f0; color: #555; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-paste:hover { background-color: #e0e0e0; color: #222; }
 
-        /* THÊM MỚI: NÚT BẤM TẠO LINK DỰ PHÒNG THỦ CÔNG */
         .btn-submit { width: 100%; padding: 13px; margin: 10px 0 20px 0; box-sizing: border-box; border-radius: 6px; font-size: 15px; background-color: #ee4d2d; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .btn-submit:hover { background-color: #d73a1e; }
         .btn-submit:disabled { background-color: #f4a292 !important; cursor: not-allowed; animation: blink 1.5s infinite ease-in-out; }
         
-        /* HIỆU ỨNG CHỜ TỰ ĐỘNG XỬ LÝ */
         .loading-status { display: none; text-align: center; color: #ee4d2d; font-weight: bold; margin: 15px 0; font-size: 14.5px; animation: blink 1.5s infinite ease-in-out; }
         
-        /* BOX THÔNG TIN SẢN PHẨM */
         #productInfoCard { display: none; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin: 15px 0; }
         .prod-title { font-weight: bold; font-size: 14.5px; color: #212529; line-height: 1.4; margin-bottom: 8px; }
         .prod-meta-wrapper { display: flex; gap: 15px; font-size: 13px; color: #6c757d; align-items: center; }
@@ -58,17 +54,11 @@
         .error-case-box ul { margin: 0; padding-left: 20px; }
         .error-case-box li { margin-bottom: 10px; color: #444; }
         .error-case-box li strong { color: #d84315; }
-        .voucher-ticket { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 25px; background: #fff; }
-        .voucher-header { background-color: #00897b; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 15px; display: flex; justify-content: center; align-items: center; letter-spacing: 0.5px; }
-        .voucher-header span { margin-right: 6px; font-size: 16px; }
-        .voucher-body { display: flex; height: 110px; }
-        .voucher-left { background-color: #ff4514; color: white; width: 35%; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 2px dashed #e0e0e0; position: relative; }
-        .voucher-left h3 { margin: 0; font-size: 32px; font-weight: 900; }
-        .voucher-left p { margin: 2px 0 0 0; font-size: 13px; font-weight: bold; letter-spacing: 1px; }
-        .voucher-right { width: 65%; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .voucher-info h4 { margin: 0; font-size: 20px; color: #222; font-weight: bold; }
-        .voucher-info p { margin: 6px 0 0 0; font-size: 13px; color: #757575; }
-        .voucher-status { background-color: #00695c; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
+
+        /* THÊM MỚI STYLES CHO CARD VOUCHER ĐỘNG */
+        .dynamic-voucher-card { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; background: #10141d; color: #fff; padding: 18px; }
+        .history-box { background: #161c26; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #232d3d; }
+        .history-title { font-size: 13px; color: #8fa0b5; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -77,21 +67,17 @@
     <h2>Hệ Thống Săn Sale Shopee - Voucher 22%</h2>
     <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Hệ thống tự động xử lý khi dán link. Dùng nút dưới nếu lỗi tự động.</p>
     
-    <!-- CẬP NHẬT: Ô NHẬP LINK ĐÃ BỌC GROUP VÀ THÊM NÚT DÁN -->
     <div class="input-group">
         <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
         <button type="button" class="btn-paste" onclick="pasteFromClipboard()">Dán</button>
     </div>
     
-    <!-- THÊM MỚI: NÚT TẠO LINK DỰ PHÒNG THỦ CÔNG -->
     <button id="btnManualSubmit" class="btn-submit" onclick="generateWorkflow(true)">
         <span id="btnText">TẠO LINK NGAY</span>
     </button>
     
-    <!-- DÒNG TRẠNG THÁI LOADING TỰ ĐỘNG -->
     <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
 
-    <!-- KHU VỰC HIỂN THỊ THÔNG TIN SẢN PHẨM KHÔNG HIỆN HOA HỒNG -->
     <div id="productInfoCard">
         <div id="cardTitle" class="prod-title">Đang nạp tên mặt hàng...</div>
         <div class="prod-meta-wrapper">
@@ -101,7 +87,6 @@
         </div>
     </div>
 
-    <!-- KHU VỰC HIỂN THỊ KẾT QUẢ LINK -->
     <div id="workflow">
         <div class="step-box step-1">
             <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN ĐỂ LƯU MÃ 22% (TUYỆT ĐỐI KHÔNG MUA)</div>
@@ -135,31 +120,162 @@
             </ul>
         </div>
 
-        <div class="voucher-ticket">
-            <div class="voucher-header"><span>★</span> VOUCHER ĐỘC QUYỀN</div>
-            <div class="voucher-body">
-                <div class="voucher-left">
-                    <h3>22%</h3>
-                    <p>GIẢM</p>
-                </div>
-                <div class="voucher-right">
-                    <div class="voucher-info">
-                        <h4>Tối đa 300k</h4>
-                        <p>Đơn từ 50K</p>
-                    </div>
-                    <div class="voucher-status">CÒN LƯỢT</div>
-                </div>
-            </div>
+        <!-- THÊM MỚI KHU VỰC CHỨA VOUCHER ĐỘNG TỪ SERVER -->
+        <h3 style="margin-top: 25px; font-size: 16px; color: #444; border-left: 4px solid #ee4d2d; padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
+        <div id="voucher-container" style="margin-bottom: 25px;">
+            <p style="font-size: 13px; color: #888; text-align: center; padding: 10px;">Đang tải danh sách dữ liệu mã giảm giá...</p>
         </div>
     </div>
-
 </div>
 
 <script>
     let delayTimer;
     const typingDelay = 400; 
 
-    // THÊM MỚI: Hàm đọc bộ nhớ tạm và tự động chạy luồng sinh link khi nhấn nút "Dán"
+    // LUỒNG TỰ ĐỘNG BỐC VOUCHER ĐỘNG KHI TẢI TRANG
+    async function fetchLiveVouchers() {
+        try {
+            const res = await fetch('/api/vouchers');
+            const data = await res.json();
+            if (data.success && data.vouchers) {
+                renderLiveVouchers(data.vouchers);
+            } else {
+                document.getElementById('voucher-container').innerHTML = `<p style="font-size:13px; color:#d9381e; text-align:center;">${data.message || 'Không thể đồng bộ danh sách mã.'}</p>`;
+            }
+        } catch (err) {
+            console.error("Lỗi nạp API voucher:", err);
+            document.getElementById('voucher-container').innerHTML = '<p style="font-size:13px; color:#d9381e; text-align:center;">Lỗi kết nối máy chủ dữ liệu mã.</p>';
+        }
+    }
+
+    function renderLiveVouchers(vouchers) {
+        const container = document.getElementById('voucher-container');
+        container.innerHTML = ''; // Clear thông báo chờ
+
+        vouchers.forEach((v, index) => {
+            const isExpired = v.status === 'expired' || v.fully_used === 1 || v.usage_progress >= 100;
+            const statusText = isExpired ? 'Hết lượt' : 'Còn lượt';
+            const progressColor = isExpired ? '#ff4514' : '#00aa5b';
+            const progressBg = isExpired ? '#3a1a1a' : '#142d1f';
+
+            const cardId = `canvas-voucher-${index}`;
+
+            const html = `
+                <div class="dynamic-voucher-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:11px; color:#8fa0b5; font-weight:bold; letter-spacing:0.5px;">MÃ VOUCHER AFFILIATE</span>
+                        <span style="background:${progressBg}; color:${progressColor}; padding:2px 10px; border-radius:4px; font-size:12px; font-weight:bold;">
+                            ${statusText}
+                        </span>
+                    </div>
+                    
+                    <h3 style="margin:8px 0 4px 0; font-size:22px; font-family:monospace; color:#fff; font-weight:bold;">
+                        ${v.voucher_code}
+                    </h3>
+                    
+                    <p style="margin:0 0 12px 0; font-size:13.5px; color:#cdd5de; background:#1b2230; padding:8px 12px; border-radius:4px; border-left:3px solid ${progressColor};">
+                        ${v.description}
+                    </p>
+                    
+                    <div style="display:flex; justify-content:space-between; font-size:12.5px; color:#8fa0b5; margin-bottom:6px;">
+                        <span>Tỷ lệ đã sử dụng</span>
+                        <span style="color:${progressColor}; font-weight:bold;">${v.usage_progress}%</span>
+                    </div>
+                    
+                    <div style="width:100%; background:#232d3d; height:8px; border-radius:4px; overflow:hidden;">
+                        <div style="width:${v.usage_progress}%; background:${progressColor}; height:100%; border-radius:4px; transition:width 0.6s ease;"></div>
+                    </div>
+
+                    <!-- KHU VỰC ĐỒ THỊ TIMELINE DÒNG THỜI GIAN -->
+                    ${v.usage_progress_history && v.usage_progress_history.length > 0 ? `
+                        <div class="history-box">
+                            <div class="history-title">
+                                <span>Dòng thời gian sử dụng</span>
+                                <span style="color:#00897b;">trực tiếp</span>
+                            </div>
+                            <canvas id="${cardId}" width="500" height="120" style="width:100%; height:120px; margin-top:5px;"></canvas>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+
+            // Bắt đầu vẽ đồ thị Timeline bằng HTML5 Canvas nếu có lịch sử
+            if (v.usage_progress_history && v.usage_progress_history.length > 0) {
+                setTimeout(() => drawTimelineGraph(cardId, v.usage_progress_history, progressColor), 50);
+            }
+        });
+    }
+
+    // Hàm vẽ biểu đồ Line Chart thủ công bằng Canvas giúp tối ưu dung lượng trang, không lo nặng tải
+    function drawTimelineGraph(canvasId, historyData, color) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Cấu hình lề đồ thị
+        const paddingLeft = 30;
+        const paddingRight = 20;
+        const paddingTop = 15;
+        const paddingBottom = 25;
+        const graphWidth = width - paddingLeft - paddingRight;
+        const graphHeight = height - paddingTop - paddingBottom;
+
+        // Vẽ các đường lưới ngang phụ trợ (0%, 50%, 100%)
+        ctx.strokeStyle = '#1f2a3c';
+        ctx.lineWidth = 1;
+        [0, 0.5, 1].forEach(ratio => {
+            const y = paddingTop + graphHeight * ratio;
+            ctx.beginPath();
+            ctx.moveTo(paddingLeft, y);
+            ctx.lineTo(width - paddingRight, y);
+            ctx.stroke();
+        });
+
+        // Xác định tọa độ điểm
+        const points = historyData.map((d, index) => {
+            const x = paddingLeft + (index / (historyData.length - 1)) * graphWidth;
+            // Tiến độ 100% nằm ở đáy trục Y trong hệ đồ thị vẽ Canvas, nên ta lật ngược lại toán tử (100 - progress)
+            const y = paddingTop + ((100 - d.progress) / 100) * graphHeight;
+            return { x, y, time: d.time };
+        });
+
+        // Tiến hành vẽ đường nối (Line)
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        points.forEach((p, idx) => {
+            if (idx === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+
+        // Vẽ các chấm tròn và nhãn text mốc giờ (X-Axis)
+        ctx.fillStyle = color;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        
+        // Chỉ hiện thị nhãn cách đoạn nếu mảng quá dài để tránh đè chữ
+        const labelInterval = Math.ceil(points.length / 6);
+
+        points.forEach((p, idx) => {
+            // Chấm tròn đầu nút giao
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Ghi text mốc thời gian dưới chân
+            if (idx % labelInterval === 0 || idx === points.length - 1) {
+                ctx.fillStyle = '#6f8299';
+                ctx.fillText(p.time, p.x, height - 6);
+                ctx.fillStyle = color;
+            }
+        });
+    }
+
     async function pasteFromClipboard() {
         try {
             const text = await navigator.clipboard.readText();
@@ -182,7 +298,6 @@
         }
     }
 
-    // CẬP NHẬT: Hàm core xử lý chấp nhận tham số isManual để phân biệt luồng bấm thủ công hay tự động dán
     async function generateWorkflow(isManual = false) {
         const url = document.getElementById('shopeeUrl').value.trim();
         if(!url) {
@@ -198,7 +313,6 @@
         const box2 = document.getElementById('boxStep2');
         const btn2 = document.getElementById('btnStep2');
         
-        // Cập nhật giao diện trạng thái chờ xử lý cho nút bấm và dòng text
         loadingStatus.style.display = 'block';
         btnText.innerText = 'ĐANG XỬ LÝ...';
         btnManualSubmit.disabled = true;
@@ -236,7 +350,7 @@
                 document.getElementById('btnStep2').href = splitResponse.step2;
                 workflow.style.display = 'block';
             } else {
-                alert('Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
+                alert(splitResponse.message || 'Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
             }
         } catch (err) {
             console.error(err);
@@ -256,6 +370,9 @@
             btn2.removeAttribute('style'); 
         }, 1000);
     }
+
+    // KÍCH HOẠT QUÉT MÃ KHI TẢI TRANG HTML XONG
+    document.addEventListener('DOMContentLoaded', fetchLiveVouchers);
 </script>
 </body>
 </html>
