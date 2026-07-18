@@ -38,10 +38,16 @@
         .step-2 { border-color: #ee4d2d; background-color: #fff5f2; }
         .step-num { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
         .step-desc { font-size: 13px; color: #666; margin-bottom: 15px; }
-        .btn-go { display: inline-block; padding: 12px 35px; color: white; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 15px; width: 80%; box-sizing: border-box; }
-        .btn-1 { background-color: #007bff; }
-        .btn-1:hover { background-color: #0056b3; }
-        .btn-2 { background-color: #ee4d2d; }
+        
+        /* CẤU TRÚC CONTAINER PHÂN TÁCH NÚT CHỌN MÃ BƯỚC 1 */
+        .step1-nodes-container { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 15px; width: 100%; }
+        .voucher-node-card { width: 90%; background: #ffffff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-align: left; }
+        
+        .btn-go { display: inline-block; padding: 12px 35px; color: white; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 15px; width: 100%; box-sizing: border-box; text-align: center; }
+        .btn-fb { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+        .btn-ytb { background: linear-gradient(135deg, #b91c1c, #ea580c); }
+        .btn-ig { background: linear-gradient(135deg, #be185d, #db2777); }
+        .btn-2 { background-color: #ee4d2d; width: 90%; }
         .btn-2:hover { background-color: #d73a1e; }
 
         .guide-box { background-color: #f7f9fc; border: 1px solid #ffe2d1; border-radius: 12px; padding: 20px; margin-bottom: 20px; line-height: 1.6; font-size: 14.5px; }
@@ -55,7 +61,6 @@
         .error-case-box li { margin-bottom: 10px; color: #444; }
         .error-case-box li strong { color: #d84315; }
 
-        /* THÊM MỚI STYLES CHO CARD VOUCHER ĐỘNG */
         .dynamic-voucher-card { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; background: #10141d; color: #fff; padding: 18px; }
         .history-box { background: #161c26; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #232d3d; }
         .history-title { font-size: 13px; color: #8fa0b5; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; }
@@ -64,7 +69,7 @@
 <body>
 
 <div class="container">
-    <h2>Hệ Thống Săn Sale Shopee - Voucher 22%</h2>
+    <h2>Hệ Thống Săn Sale Shopee - Quy Trình 2 Bước</h2>
     <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Hệ thống tự động xử lý khi dán link. Dùng nút dưới nếu lỗi tự động.</p>
     
     <div class="input-group">
@@ -87,16 +92,22 @@
         </div>
     </div>
 
+    <!-- KHU VỰC HIỂN THỊ KẾT QUẢ LINK THEO 2 BƯỚC HOÀN CHỈNH -->
     <div id="workflow">
+        <!-- BƯỚC 1: Hiện danh sách nút bấm tương ứng với từng luồng mã của Salesoc -->
         <div class="step-box step-1">
-            <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN ĐỂ LƯU MÃ 22% (TUYỆT ĐỐI KHÔNG MUA)</div>
-            <div class="step-desc">Mở Shopee để đưa Voucher 22% vào ví of bạn.</div>
-            <a id="btnStep1" class="btn-go btn-1" href="#" target="_blank" onclick="markStep1Done()">1. LƯU MÃ 22%</a>
+            <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN CHỌN MÃ PHÙ HỢP ĐỂ LƯU (KHÔNG MUA HÀNG)</div>
+            <div class="step-desc">Lựa chọn nút lưu mã thích hợp nhất với giá trị đơn hàng của bạn ở dưới.</div>
+            
+            <div class="step1-nodes-container" id="step1ButtonsZone">
+                <!-- Nút của từng nền tảng kèm text ưu đãi động được render tại đây -->
+            </div>
         </div>
 
+        <!-- BƯỚC 2: Giữ nguyên một nút cam duy nhất chốt đơn cuối cùng -->
         <div class="step-box step-2" id="boxStep2" style="opacity: 0.4;">
             <div class="step-num" style="color: #ee4d2d;">BƯỚC 2: ẤN ĐỂ MUA VÀ ÁP MÃ HỢP LỆ</div>
-            <div class="step-desc">Nhấp vào đây để chốt đơn hàng và voucher hợp lệ.</div>
+            <div class="step-desc">Nhấp vào đây để chốt đơn hàng và áp cái mã bạn vừa chọn mở lưu ở Bước 1.</div>
             <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
         </div>
     </div>
@@ -105,9 +116,9 @@
         <div class="guide-box">
             <div class="guide-title"><i>i</i> Hướng dẫn</div>
             <div class="guide-text">
-                <strong>Bước 1:</strong> Bấm nút xanh <strong>"Lưu Mã 22%"</strong>. App Shopee sẽ mở lên, bạn chờ 3s cho mã lưu vào ví, sau đó quay lại trang web này.<br>
-                <span class="warning-text">(Lưu ý: Bước 1 chỉ để lưu mã độc quyền 22%. Không được "MUA HÀNG" ở bước này để tránh bị Shopee quét huỷ đơn, lỗi đơn,...).</span>
-                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong>. Chọn Mua với mã giảm giá, chọn phân loại hàng và bấm mua ngay, chọn Shopee Voucher và áp mã giảm giá 22% vào, sau đó bấm nút đặt hàng.
+                <strong>Bước 1:</strong> Tìm mã ưu đãi phù hợp nhất với túi tiền của bạn ở cụm nút xanh. Hệ thống mở app Shopee lên bạn chờ 3s lưu mã vào ví rồi quay lại đây.<br>
+                <span class="warning-text">(Mẹo: Khách có thể click lưu mã YTB trước, sau đó quay lại chọn lưu tiếp mã FB để làm phương án dự phòng vô tư).</span>
+                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong> dưới cùng để tiến hành áp mã ưu đãi và đặt hàng.
             </div>
         </div>
 
@@ -120,7 +131,6 @@
             </ul>
         </div>
 
-        <!-- THÊM MỚI KHU VỰC CHỨA VOUCHER ĐỘNG TỪ SERVER -->
         <h3 style="margin-top: 25px; font-size: 16px; color: #444; border-left: 4px solid #ee4d2d; padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
         <div id="voucher-container" style="margin-bottom: 25px;">
             <p style="font-size: 13px; color: #888; text-align: center; padding: 10px;">Đang tải danh sách dữ liệu mã giảm giá...</p>
@@ -130,6 +140,7 @@
 
 <script>
     let delayTimer;
+    let liveVouchersCache = [];
     const typingDelay = 400; 
 
     // LUỒNG TỰ ĐỘNG BỐC VOUCHER ĐỘNG KHI TẢI TRANG
@@ -138,6 +149,7 @@
             const res = await fetch('/api/vouchers');
             const data = await res.json();
             if (data.success && data.vouchers) {
+                liveVouchersCache = data.vouchers; // Lưu bộ nhớ đệm phục vụ hiển thị
                 renderLiveVouchers(data.vouchers);
             } else {
                 document.getElementById('voucher-container').innerHTML = `<p style="font-size:13px; color:#d9381e; text-align:center;">${data.message || 'Không thể đồng bộ danh sách mã.'}</p>`;
@@ -208,7 +220,6 @@
         });
     }
 
-    // Hàm vẽ biểu đồ Line Chart thủ công bằng Canvas giúp tối ưu dung lượng trang, không lo nặng tải
     function drawTimelineGraph(canvasId, historyData, color) {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
@@ -216,7 +227,6 @@
         const width = canvas.width;
         const height = canvas.height;
 
-        // Cấu hình lề đồ thị
         const paddingLeft = 30;
         const paddingRight = 20;
         const paddingTop = 15;
@@ -224,7 +234,6 @@
         const graphWidth = width - paddingLeft - paddingRight;
         const graphHeight = height - paddingTop - paddingBottom;
 
-        // Vẽ các đường lưới ngang phụ trợ (0%, 50%, 100%)
         ctx.strokeStyle = '#1f2a3c';
         ctx.lineWidth = 1;
         [0, 0.5, 1].forEach(ratio => {
@@ -235,15 +244,12 @@
             ctx.stroke();
         });
 
-        // Xác định tọa độ điểm
         const points = historyData.map((d, index) => {
             const x = paddingLeft + (index / (historyData.length - 1)) * graphWidth;
-            // Tiến độ 100% nằm ở đáy trục Y trong hệ đồ thị vẽ Canvas, nên ta lật ngược lại toán tử (100 - progress)
             const y = paddingTop + ((100 - d.progress) / 100) * graphHeight;
             return { x, y, time: d.time };
         });
 
-        // Tiến hành vẽ đường nối (Line)
         ctx.strokeStyle = color;
         ctx.lineWidth = 2.5;
         ctx.beginPath();
@@ -253,21 +259,17 @@
         });
         ctx.stroke();
 
-        // Vẽ các chấm tròn và nhãn text mốc giờ (X-Axis)
         ctx.fillStyle = color;
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'center';
         
-        // Chỉ hiện thị nhãn cách đoạn nếu mảng quá dài để tránh đè chữ
         const labelInterval = Math.ceil(points.length / 6);
 
         points.forEach((p, idx) => {
-            // Chấm tròn đầu nút giao
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI);
             ctx.fill();
 
-            // Ghi text mốc thời gian dưới chân
             if (idx % labelInterval === 0 || idx === points.length - 1) {
                 ctx.fillStyle = '#6f8299';
                 ctx.fillText(p.time, p.x, height - 6);
@@ -346,8 +348,12 @@
             }
 
             if (splitResponse && splitResponse.success) {
-                document.getElementById('btnStep1').href = splitResponse.step1;
+                // Đút link sạch Bước 2 vào nút Cam cố định dưới cùng
                 document.getElementById('btnStep2').href = splitResponse.step2;
+                
+                // Kết xuất cụm nút chọn mã động cho khối Bước 1
+                buildStep1DynamicButtons(splitResponse);
+                
                 workflow.style.display = 'block';
             } else {
                 alert(splitResponse.message || 'Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
@@ -360,6 +366,60 @@
             btnText.innerText = 'TẠO LINK NGAY';
             btnManualSubmit.disabled = false;
         }
+    }
+
+    // Thuật toán bóc tách kết xuất cụm chọn mã động cho Bước 1
+    function buildStep1DynamicButtons(linksData) {
+        const zone = document.getElementById('step1ButtonsZone');
+        zone.innerHTML = '';
+
+        const platformsConfig = [
+            {
+                key: 'fbLink',
+                label: 'MÃ FACEBOOK (FB)',
+                btnClass: 'btn-fb',
+                link: linksData.fbLink,
+                filter: (v) => v.voucher_code.toUpperCase().includes('META') || v.voucher_code.toUpperCase().includes('PAR')
+            },
+            {
+                key: 'ytbLink',
+                label: 'MÃ YOUTUBE (YTB)',
+                btnClass: 'btn-ytb',
+                link: linksData.ytbLink,
+                filter: (v) => v.voucher_code.toUpperCase().includes('YOUTUBE') || v.voucher_code.toUpperCase().includes('YT')
+            },
+            {
+                key: 'igLink',
+                label: 'MÃ INSTAGRAM (IG)',
+                btnClass: 'btn-ig',
+                link: linksData.igLink,
+                filter: (v) => v.voucher_code.toUpperCase().includes('IG') || v.voucher_code.toUpperCase().includes('INSTA')
+            }
+        ];
+
+        platformsConfig.forEach(p => {
+            // Tự động ẩn nút nếu Salesoc không trả ra luồng link tương ứng của nền tảng này
+            if (!p.link || p.link.trim() === "") return;
+
+            // Tìm chi tiết thông tin mã sống (%) tương ứng từ mảng tổng để ghi nhãn mô tả dưới nút
+            const matched = liveVouchersCache.filter(p.filter).filter(v => v.status !== 'expired' && v.usage_progress < 100);
+            
+            const voucherDetailText = matched.length > 0 
+                ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
+                : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
+
+            const nodeHTML = `
+                <div class="voucher-node-card">
+                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()">
+                        1. MỞ LINK LƯU: ${p.label}
+                    </a>
+                    <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">
+                        🔥 ${voucherDetailText}
+                    </div>
+                </div>
+            `;
+            zone.insertAdjacentHTML('beforeend', nodeHTML);
+        });
     }
 
     function markStep1Done() {
