@@ -15,6 +15,9 @@ const MY_AFFILIATE_ID = "17344490003";
 // BỘ NHỚ LƯU TRỮ LINK RÚT GỌN TẠM THỜI (In-Memory Object)
 const shortLinksStorage = {};
 
+// BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
+const resolvedLinksCache = {};
+
 // HÀM TẠO CHUỖI NGẪU NHIÊN LÀM MÃ RÚT GỌN
 function generateRandomCode(length = 6) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -39,6 +42,12 @@ app.post('/api/product-info', async (req, res) => {
 
         if (prodResponse.data && prodResponse.data.status === "success") {
             const info = prodResponse.data.productInfo;
+            
+            // BẮT TRÚNG TRƯỜNG productLink ĐỂ ĐÈ ĐƯỜNG DẪN DÀI VÀO CACHE RIÊNG BIỆT
+            if (info && info.productLink) {
+                resolvedLinksCache[url.trim()] = info.productLink;
+                console.log(`🎯 Đã lưu cache link dài từ Addlivetag: ${info.productLink}`);
+            }
             
             // TUYỆT ĐỐI KHÔNG TRẢ VỀ: commission, sellerComFinal, shopeeComFinal để giấu khách hoàn toàn
             return res.json({
@@ -68,6 +77,7 @@ app.post('/api/split-link', async (req, res) => {
         let step1VoucherLink = url; 
 
         // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
+        // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
         try {
             const salesocResponse = await axios.post('https://salesoc.vn/api/convert-with-shelf', {
                 url: url,
@@ -114,8 +124,12 @@ app.post('/api/split-link', async (req, res) => {
             }
         }
 
-        // BƯỚC 2: Cập nhật dấu & nối chuẩn theo tài liệu Shopee và bỏ hoàn toàn sub_id
-        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
+        // ==================== TỐI ƯU LUỒNG BƯỚC 2: SỬ DỤNG LINK GỐC DÀI TRỊ LỖI OOPS ====================
+        // Kiểm tra xem trong cache riêng biệt đã lưu được link dài lấy từ Addlivetag cho URL này chưa
+        const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
+
+        // Cập nhật dấu & nối chuẩn, sử dụng link dài đã encode cho origin_link để Shopee nhận diện chính xác
+        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
 
         // ==================== TIẾN HÀNH RÚT GỌN NỘI BỘ BƯỚC 2 ====================
         const shortCode = generateRandomCode(6); // Sinh mã 6 ký tự ngẫu nhiên
