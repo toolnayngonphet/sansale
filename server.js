@@ -73,8 +73,8 @@ app.post('/api/split-link', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vui lòng cung cấp link Shopee' });
         }
 
-        // Mặc định ban đầu: Nếu luồng lấy voucher lỗi, ta trả luôn link gốc cho Bước 1 để tránh sập giao diện
-        let step1VoucherLink = url; 
+        // Mặc định ban đầu: Tạo biến chứa kết quả của Salesoc
+        let step1VoucherLink = ""; 
 
         // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
         // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
@@ -114,14 +114,21 @@ app.post('/api/split-link', async (req, res) => {
                                        data.affiliateUrl || 
                                        url;
                 }
+            } else {
+                // Nếu kết nối thành công nhưng cấu trúc trả về không có success true, chặn luồng báo lỗi cho khách luôn
+                return res.json({
+                    success: false,
+                    message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
+                });
             }
         } catch (apiErr) {
             console.log('⚠️ Không lấy được voucher từ Salesoc (Có thể bị chặn Cloudflare/CORS):', apiErr.message);
             
-            // CƠ CHẾ DỰ PHÒNG THÔNG MINH: Nếu link gốc nhập vào dạng s.shopee.vn, giữ nguyên làm Bước 1 luôn
-            if (url.includes('s.shopee.vn') || url.includes('shp.ee')) {
-                step1VoucherLink = url;
-            }
+            // CẬP NHẬT MỚI: Trả lỗi trực tiếp về cho khách hàng, không sử dụng luồng link gốc dự phòng nữa
+            return res.json({
+                success: false,
+                message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
+            });
         }
 
         // ==================== TỐI ƯU LUỒNG BƯỚC 2: SỬ DỤNG LINK GỐC DÀI TRỊ LỖI OOPS ====================
@@ -152,24 +159,9 @@ app.post('/api/split-link', async (req, res) => {
     } catch (error) {
         console.error("❌ Lỗi Core Hệ Thống:", error);
         return res.json({ 
-            success: true, 
-            step1: req.body.url || "https://shopee.vn", 
-            step2: `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(req.body.url || '')}&affiliate_id=${MY_AFFILIATE_ID}` 
+            success: false, 
+            message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
         });
-    }
-});
-
-// ==================== ENDPOINT ĐIỀU HƯỚNG GIẢI MÃ LINK RÚT GỌN ====================
-// Khi khách truy cập dạng domain.com/r/ABCXYZ, hệ thống bốc link thô và tự động redirect (302) sang Shopee
-app.get('/r/:code', (req, res) => {
-    const code = req.params.code;
-    const targetRawLink = shortLinksStorage[code];
-
-    if (targetRawLink) {
-        return res.redirect(targetRawLink);
-    } else {
-        // Dự phòng nếu không tìm thấy mã, đẩy thẳng sang trang chủ Shopee
-        return res.redirect('https://shopee.vn');
     }
 });
 
