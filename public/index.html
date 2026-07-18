@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Săn Sale Shopee - Voucher 22%</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background-color: #f4f6f9; color: #333; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
+        input, button { width: 100%; padding: 13px; margin: 10px 0; box-sizing: border-box; border-radius: 6px; font-size: 15px; }
+        input { border: 1px solid #ccc; }
+        input:focus { border-color: #ee4d2d; outline: none; }
+        
+        /* CẤU HÌNH NÚT BẤM CÓ HIỆU ỨNG LOADING */
+        button { 
+            background-color: #ee4d2d; 
+            color: white; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Khoảng cách giữa chữ và spinner */
+        }
+        button:hover { background-color: #d73a1e; }
+        
+        /* Trạng thái khi đang load */
+        button:disabled { 
+            background-color: #f4a292 !important; /* Màu cam nhạt */
+            color: #ffffff; 
+            cursor: not-allowed; 
+            animation: blink 1.5s infinite ease-in-out; /* Hiệu ứng chớp tắt nhẹ tránh cảm giác treo máy */
+        }
+
+        /* VÒNG XOAY SPINNER CSS */
+        .spinner {
+            display: none; /* Mặc định ẩn */
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Khai báo hiệu ứng xoay tròn */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Khai báo hiệu ứng chớp tắt nhẹ */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* KHU VỰC NÚT B1, B2 KHI TẠO LINK XONG SẼ HIỆN Ở ĐÂY */
+        #workflow { display: none; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px dashed #e0e0e0; }
+        
+        /* KHU VỰC CÁC NÚT BẤM ĐIỀU HƯỚNG */
+        .step-box { background: #fff; border: 2px dashed #ddd; padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .step-1 { border-color: #007bff; background-color: #f0f7ff; }
+        .step-2 { border-color: #ee4d2d; background-color: #fff5f2; }
+        .step-num { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .step-desc { font-size: 13px; color: #666; margin-bottom: 15px; }
+        .btn-go { display: inline-block; padding: 12px 35px; color: white; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 15px; width: 80%; box-sizing: border-box; }
+        .btn-1 { background-color: #007bff; }
+        .btn-1:hover { background-color: #0056b3; }
+        .btn-2 { background-color: #ee4d2d; }
+        .btn-2:hover { background-color: #d73a1e; }
+
+        /* BẢNG HƯỚNG DẪN */
+        .guide-box {
+            background-color: #f7f9fc;
+            border: 1px solid #ffe2d1;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14.5px;
+        }
+        .guide-title {
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 12px;
+        }
+        .guide-title i {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-style: normal;
+            font-size: 12px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        .warning-text {
+            color: #d9381e;
+            font-style: italic;
+            font-weight: bold;
+            display: block;
+            margin: 8px 0;
+            padding: 6px 10px;
+            background-color: #fff3f1;
+            border-left: 3px solid #d9381e;
+            border-radius: 4px;
+        }
+
+        /* BẢNG TRƯỜNG HỢP KHÔNG THẤY VOUCHER */
+        .error-case-box {
+            background-color: #fffde7;
+            border: 1px solid #fff59d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+        .error-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #d84315;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .error-title span {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        .error-case-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .error-case-box li {
+            margin-bottom: 10px;
+            color: #444;
+        }
+        .error-case-box li strong {
+            color: #d84315;
+        }
+
+        /* ĐỊNH DẠNG VOUCHER ĐỘC QUYỀN */
+        .voucher-ticket {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 25px;
+            background: #fff;
+        }
+        .voucher-header {
+            background-color: #00897b;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            letter-spacing: 0.5px;
+        }
+        .voucher-header span {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        .voucher-body {
+            display: flex;
+            height: 110px;
+        }
+        .voucher-left {
+            background-color: #ff4514;
+            color: white;
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 2px dashed #e0e0e0;
+            position: relative;
+        }
+        .voucher-left h3 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 900;
+        }
+        .voucher-left p {
+            margin: 2px 0 0 0;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .voucher-right {
+            width: 65%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+        .voucher-info h4 {
+            margin: 0;
+            font-size: 20px;
+            color: #222;
+            font-weight: bold;
+        }
+        .voucher-info p {
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            color: #757575;
+        }
+        .voucher-status {
+            background-color: #00695c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hệ Thống Săn Sale Shopee - Voucher 22%</h2>
+    <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Nhập link sản phẩm để lấy Voucher tự động và mua hàng trợ giá.</p>
+    
+    <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn...">
+    
+    <!-- THÊM THẺ SPINNER VÀO TRONG NÚT BẤM -->
+    <button id="btnSubmit" onclick="generateWorkflow()">
+        <span id="btnText">TẠO LINK NGAY</span>
+        <div id="btnSpinner" class="spinner"></div>
+    </button>
+
+    <!-- KHU VỰC HIỂN THỊ KẾT QUẢ LINK (CHỈ HIỆN LÊN TRÊN KHI TẠO LINK THÀNH CÔNG) -->
+    <div id="workflow">
+        <!-- BƯỚC 1: ĐIỀU HƯỚNG LƯU MÃ -->
+        <div class="step-box step-1">
+            <div class="step-num" style="color: #007bff;">BƯỚC 1: KÍCH HOẠT VOUCHER ĐỘC QUYỀN</div>
+            <div class="step-desc">Mở Shopee ngầm để đưa Voucher 22% vào ví của bạn.</div>
+            <a id="btnStep1" class="btn-go btn-1" href="#" target="_blank" onclick="markStep1Done()">1. LƯU MÃ 22%</a>
+        </div>
+
+        <!-- BƯỚC 2: ĐIỀU HƯỚNG MUA HÀNG ĂN AFFILIATE -->
+        <div class="step-box step-2" id="boxStep2" style="opacity: 0.4;">
+            <div class="step-num" style="color: #ee4d2d;">BƯỚC 2: TIẾN HÀNH ĐẶT MUA SẢN PHẨM</div>
+            <div class="step-desc">Nhấp vào đây để chốt đơn hàng và ăn hoa hồng chính chủ.</div>
+            <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
+        </div>
+    </div>
+
+    <!-- BA MỤC LỚN LUÔN LUÔN HIỆN SẴN DƯỚI ĐÂY -->
+    <div id="static-info">
+        <!-- BẢNG 1: HƯỚNG DẪN -->
+        <div class="guide-box">
+            <div class="guide-title"><i>i</i> Hướng dẫn</div>
+            <div class="guide-text">
+                <strong>Bước 1:</strong> Bấm nút xanh <strong>"Lưu Mã 22%"</strong>. App Shopee sẽ mở lên, bạn chờ 3s cho mã lưu vào ví, sau đó quay lại trang web này.<br>
+                <span class="warning-text">(Lưu ý: Bước 1 chỉ để lưu mã độc quyền 22%. Không được "MUA HÀNG" ở bước này để tránh bị Shopee quét huỷ đơn, lỗi đơn,...).</span>
+                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong>. Chọn Mua với mã giảm giá, chọn phân loại hàng và bấm mua ngay, chọn Shopee Voucher và áp mã giảm giá 22% vào, sau đó bấm nút đặt hàng.
+            </div>
+        </div>
+
+        <!-- BẢNG 2: TRƯỜNG HỢP KHÔNG THẤY VOUCHER -->
+        <div class="error-case-box">
+            <div class="error-title"><span>⚠️</span> Trường hợp không thấy voucher</div>
+            <ul>
+                <li><strong>Sản phẩm bị lọc</strong> không áp dụng được &rarr; Hãy thử sản phẩm khác.</li>
+                <li><strong>Tài khoản của bạn bị lọc</strong> &rarr; Thử nhiều sản phẩm, nhiều ngành hàng khác nhau vẫn không thấy voucher là do tài khoản.</li>
+                <li><strong>Voucher hết lượt</strong> &rarr; Hãy canh các khung giờ 0h, 9h, 12h, 15h, 18h, 21h để mua.</li>
+            </ul>
+        </div>
+
+        <!-- BẢNG 3: VOUCHER ĐỘC QUYỀN TRỰC QUAN -->
+        <div class="voucher-ticket">
+            <div class="voucher-header">
+                <span>★</span> VOUCHER ĐỘC QUYỀN
+            </div>
+            <div class="voucher-body">
+                <div class="voucher-left">
+                    <h3>22%</h3>
+                    <p>GIẢM</p>
+                </div>
+                <div class="voucher-right">
+                    <div class="voucher-info">
+                        <h4>Tối đa 300k</h4>
+                        <p>Đơn từ 50K</p>
+                    </div>
+                    <div class="voucher-status">CÒN LƯỢT</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    async function generateWorkflow() {
+        const url = document.getElementById('shopeeUrl').value.trim();
+        if(!url) return alert('Vui lòng dán link Shopee vào!');
+
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        
+        // KÍCH HOẠT HIỆU ỨNG LOADING TRỰC QUAN
+        btnText.innerText = 'Đang tạo link voucher độc quyền...';
+        btnSpinner.style.display = 'block'; // Hiện vòng xoay tròn
+        btnSubmit.disabled = true; // Khóa nút
+        
+        document.getElementById('workflow').style.display = 'none';
+
+        const box2 = document.getElementById('boxStep2');
+        const btn2 = document.getElementById('btnStep2');
+        box2.style.opacity = "0.4";
+        btn2.setAttribute('style', 'pointer-events: none; background-color: #9e9e9e;');
+
+        try {
+            const response = await fetch('http://localhost:3000/api/split-link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server phản hồi lỗi HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if(data && data.success) {
+                document.getElementById('btnStep1').href = data.step1;
+                document.getElementById('btnStep2').href = data.step2;
+                document.getElementById('workflow').style.display = 'block';
+            } else {
+                alert('Xử lý link thất bại từ hệ thống phản hồi.');
+            }
+        } catch (err) {
+            alert('Lỗi kết nối Server: ' + err.message);
+        } finally {
+            // TẮT HIỆU ỨNG LOADING, KHÔI PHỤC NÚT BẤM
+            btnText.innerText = 'TẠO LINK NGAY';
+            btnSpinner.style.display = 'none'; // Ẩn vòng xoay tròn
+            btnSubmit.disabled = false; // Mở khóa nút
+        }
+    }
+
+    function markStep1Done() {
+        setTimeout(() => {
+            const box2 = document.getElementById('boxStep2');
+            const btn2 = document.getElementById('btnStep2');
+            box2.style.opacity = "1";
+            btn2.removeAttribute('style'); 
+        }, 1000);
+    }
+</script>
+</body>
+</html>
