@@ -30,11 +30,11 @@ app.post('/api/split-link', async (req, res) => {
             }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
                     'Origin': 'https://salesoc.vn',
                     'Referer': 'https://salesoc.vn/'
                 },
-                timeout: 5000 // Giới hạn đợi phản hồi từ đối tác trong 5 giây
+                timeout: 8000 // TĂNG LÊN 8 GIÂY: Tránh tình trạng mạng kết nối quốc tế từ Railway về VN bị nghẽn
             });
 
             // Kiểm tra kỹ cấu trúc dữ liệu trả về từ Salesoc trước khi bóc tách
@@ -46,7 +46,6 @@ app.post('/api/split-link', async (req, res) => {
                 console.log("👉 Link bạn nhập vào (url):", url);
                 console.log("👉 Link rút gọn Shopee (affipadShortUrl):", data.affipadShortUrl || "N/A (RỖNG)");
                 console.log("👉 Link Facebook ngắn (shortFacebookAffiliateUrl):", data.shortFacebookAffiliateUrl || "N/A (RỖNG)");
-                console.log("👉 Link Facebook thô (facebookAffiliateUrl):", data.facebookAffiliateUrl ? "Có dữ liệu (Payload dài)" : "N/A (RỖNG)");
                 console.log("==========================================================\n");
                 // ================================================================
 
@@ -62,8 +61,12 @@ app.post('/api/split-link', async (req, res) => {
                 }
             }
         } catch (apiErr) {
-            // Khi Salesoc chặn IP local hoặc dính lỗi kết nối, log ra màn hình console của bạn để theo dõi
             console.log('⚠️ Không lấy được voucher từ Salesoc (Có thể bị chặn Cloudflare/CORS):', apiErr.message);
+            
+            // CƠ CHẾ DỰ PHÒNG THÔNG MINH: Nếu link gốc nhập vào dạng s.shopee.vn, giữ nguyên làm Bước 1 luôn
+            if (url.includes('s.shopee.vn') || url.includes('shp.ee')) {
+                step1VoucherLink = url;
+            }
         }
 
         // BƯỚC 2: Tự dựng link Affiliate chính chủ của bạn (Dùng ID của bạn để đè Cookie ăn hoa hồng)
@@ -78,7 +81,6 @@ app.post('/api/split-link', async (req, res) => {
 
     } catch (error) {
         console.error("❌ Lỗi Core Hệ Thống:", error);
-        // Fallback bảo vệ tầng cuối cùng, chặn đứng hoàn toàn lỗi 'Unexpected end of JSON input' ở Client
         return res.json({ 
             success: true, 
             step1: req.body.url || "https://shopee.vn", 
@@ -87,6 +89,7 @@ app.post('/api/split-link', async (req, res) => {
     }
 });
 
-// ĐÃ CẬP NHẬT: Ưu tiên bốc cổng do Railway cấp phát ngẫu nhiên, nếu không có mới dùng cổng mặc định 3000
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`);
+});
