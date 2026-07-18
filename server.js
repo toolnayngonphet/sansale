@@ -101,8 +101,8 @@ app.post('/api/split-link', async (req, res) => {
             }
         }
 
-        // BƯỚC 2: Đã loại bỏ hoàn toàn sub_id và cập nhật cụm ?& trước affiliate_id theo tài liệu chuẩn của Shopee
-        const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}?&affiliate_id=${MY_AFFILIATE_ID}`;
+        // BƯỚC 2: Cập nhật dấu & nối chuẩn theo tài liệu Shopee và bỏ hoàn toàn sub_id
+        const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(url)}&affiliate_id=${MY_AFFILIATE_ID}`;
 
         // BẮT BUỘC LUÔN PHẢI TRẢ VỀ JSON HỢP LỆ CHO FRONTEND ĐỂ KHÔNG BỊ LỖI PHÂN TÍCH CÚ PHÁP
         return res.json({
@@ -116,7 +116,7 @@ app.post('/api/split-link', async (req, res) => {
         return res.json({ 
             success: true, 
             step1: req.body.url || "https://shopee.vn", 
-            step2: `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(req.body.url || '')}?&affiliate_id=${MY_AFFILIATE_ID}` 
+            step2: `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(req.body.url || '')}&affiliate_id=${MY_AFFILIATE_ID}` 
         });
     }
 });
