@@ -41,6 +41,15 @@ app.post('/api/split-link', async (req, res) => {
             if (salesocResponse && salesocResponse.data && salesocResponse.data.success === true) {
                 const data = salesocResponse.data;
                 
+                // ==================== KHU VỰC DEBUG HỆ THỐNG ====================
+                console.log("\n=================== SALESOC DATA DEBUG ===================");
+                console.log("👉 Link bạn nhập vào (url):", url);
+                console.log("👉 Link rút gọn Shopee (affipadShortUrl):", data.affipadShortUrl || "N/A (RỖNG)");
+                console.log("👉 Link Facebook ngắn (shortFacebookAffiliateUrl):", data.shortFacebookAffiliateUrl || "N/A (RỖNG)");
+                console.log("👉 Link Facebook thô (facebookAffiliateUrl):", data.facebookAffiliateUrl ? "Có dữ liệu (Payload dài)" : "N/A (RỖNG)");
+                console.log("==========================================================\n");
+                // ================================================================
+
                 // THUẬT TOÁN ĐƯỢC ÉP LẠI CHẶT CHẼ: Kiểm tra đích danh trường affipadShortUrl trước
                 if (data.affipadShortUrl && data.affipadShortUrl.trim() !== "") {
                     step1VoucherLink = data.affipadShortUrl; // Ép lấy chuẩn link https://shp.ee/...
