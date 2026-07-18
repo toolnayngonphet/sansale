@@ -15,26 +15,33 @@ const MY_AFFILIATE_ID = "17344490003";
 // BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
 const resolvedLinksCache = {};
 
-// ==================== ENDPOINT MỚI: BỐC VOUCHER ĐỘNG CHO FRONTEND VẼ UI ====================
+// ==================== ENDPOINT MỚI: BỐC VOUCHER ĐỘNG TỪ SALESOC ====================
 app.get('/api/vouchers', async (req, res) => {
     try {
-        // Gọi đến API quét mã của hệ thống đối tác
-        // Lưu ý: Thay đổi URL dưới đây thành endpoint thực tế khi bạn deploy nhé
-        const response = await axios.get('https://api.domain-doi-tac.com/get-vouchers', {
-            timeout: 5000
+        // Gọi trực tiếp đến API thực tế của Salesoc kèm header bypass Cloudflare
+        const response = await axios.get('https://salesoc.vn/api/vouchers', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Origin': 'https://salesoc.vn',
+                'Referer': 'https://salesoc.vn/',
+                'Accept': 'application/json, text/plain, */*',
+                'Cache-Control': 'no-cache', // Ép server trả về data mới nhất, không nhận 304 Not Modified từ browser cache
+                'Pragma': 'no-cache'
+            },
+            timeout: 6000
         });
 
+        // Kiểm tra cấu trúc mảng dữ liệu trả về từ đối tác
         if (response.data && Array.isArray(response.data)) {
-            // Trả toàn bộ mảng chứa danh sách voucher động về cho Frontend
             return res.json({
                 success: true,
                 vouchers: response.data
             });
         }
 
-        return res.json({ success: false, message: "Không phân tích được danh sách voucher" });
+        return res.json({ success: false, message: "Không phân tích được danh sách voucher từ Salesoc" });
     } catch (error) {
-        console.log("⚠️ Lỗi fetch dữ liệu voucher động:", error.message);
+        console.log("⚠️ Lỗi fetch dữ liệu voucher động từ Salesoc:", error.message);
         return res.json({ success: false, message: error.message });
     }
 });
