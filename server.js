@@ -12,6 +12,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CẤU HÌNH CỦA BẠN
 const MY_AFFILIATE_ID = "17344490003"; 
 
+// ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
+app.post('/api/product-info', async (req, res) => {
+    try {
+        const { url } = req.body;
+        if (!url) {
+            return res.status(400).json({ success: false, message: 'Thiếu URL sản phẩm' });
+        }
+
+        const prodResponse = await axios.get(`https://data.addlivetag.com/product-data/product-data.php?url=${encodeURIComponent(url)}`, {
+            timeout: 5000
+        });
+
+        if (prodResponse.data && prodResponse.data.status === "success") {
+            const info = prodResponse.data.productInfo;
+            
+            // TUYỆT ĐỐI KHÔNG TRẢ VỀ: commission, sellerComFinal, shopeeComFinal để giấu khách hoàn toàn
+            return res.json({
+                success: true,
+                productName: info.productName,
+                price: info.price,
+                sales: info.sales,
+                rating: info.rating
+            });
+        }
+        
+        return res.json({ success: false, message: "Không lấy được chi tiết sản phẩm" });
+    } catch (error) {
+        console.log("⚠️ Lỗi fetch dữ liệu thông tin sản phẩm:", error.message);
+        return res.json({ success: false, message: error.message });
+    }
+});
+
 app.post('/api/split-link', async (req, res) => {
     try {
         const { url } = req.body;
