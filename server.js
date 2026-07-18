@@ -87,5 +87,6 @@ app.post('/api/split-link', async (req, res) => {
     }
 });
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Hệ thống phân luồng săn sale đang chạy tại: http://localhost:${PORT}`));
+// ĐÃ CẬP NHẬT: Ưu tiên bốc cổng do Railway cấp phát ngẫu nhiên, nếu không có mới dùng cổng mặc định 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`));
