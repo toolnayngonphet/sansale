@@ -15,7 +15,7 @@ const MY_AFFILIATE_ID = "17344490003";
 // BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
 const resolvedLinksCache = {};
 
-// ==================== ENDPOINT MỚI: BỐC VOUCHER ĐỘNG TỪ SALESOC ====================
+// ==================== ENDPOINT: BỐC VOUCHER ĐỘNG TỪ SALESOC ====================
 app.get('/api/vouchers', async (req, res) => {
     try {
         // Gọi trực tiếp đến API thực tế của Salesoc kèm header bypass Cloudflare
@@ -91,8 +91,6 @@ app.post('/api/split-link', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vui lòng cung cấp link Shopee' });
         }
 
-        let step1VoucherLink = ""; 
-
         // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
         // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
         try {
@@ -121,16 +119,18 @@ app.post('/api/split-link', async (req, res) => {
                 console.log("==========================================================\n");
                 // ================================================================
 
-                // THUẬT TOÁN ĐƯỢC ÉP LẠI CHẶT CHẼ: Kiểm tra đích danh trường affipadShortUrl trước
-                if (data.affipadShortUrl && data.affipadShortUrl.trim() !== "") {
-                    step1VoucherLink = data.affipadShortUrl; // Ép lấy chuẩn link https://shp.ee/...
-                } else {
-                    // Nếu hoàn toàn không có affipadShortUrl thì mới dự phòng theo thứ tự dưới này
-                    step1VoucherLink = data.shortFacebookAffiliateUrl || 
-                                       data.facebookAffiliateUrl || 
-                                       data.affiliateUrl || 
-                                       url;
-                }
+                // TỐI ƯU LUỒNG BƯỚC 2: Sử dụng link gốc dài trị lỗi OOPS màn hình Shopee
+                const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
+                const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
+
+                // TRẢ VỀ ĐẦY ĐỦ CÁC LUỒNG ĐỂ FRONTEND RENDERING ĐỘNG BƯỚC 1 VÀ BƯỚC 2
+                return res.json({
+                    success: true,
+                    fbLink: data.affipadShortUrl || "",
+                    ytbLink: data.affiliateUrl || "",
+                    igLink: data.shortInstagramAffiliateUrl || data.instagramAffiliateUrl || "",
+                    step2: step2AffiliateLink
+                });
             } else {
                 // Thất bại trong việc lấy dữ liệu thành công từ Salesoc -> Trả thông báo lỗi trực tiếp
                 return res.json({
@@ -147,20 +147,6 @@ app.post('/api/split-link', async (req, res) => {
                 message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
             });
         }
-
-        // ==================== TỐI ƯU LUỒNG BƯỚC 2: SỬ DỤNG LINK GỐC DÀI TRỊ LỖI OOPS ====================
-        // Kiểm tra xem trong cache riêng biệt đã lưu được link dài lấy từ Addlivetag cho URL này chưa
-        const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
-
-        // Trả trực tiếp link thô định dạng chuẩn của Shopee, bóc hoàn toàn luồng bọc qua endpoint /r/ nội bộ
-        const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
-
-        // BẮT BUỘC LUÔN PHẢI TRẢ VỀ JSON HỢP LỆ CHO FRONTEND ĐỂ KHÔNG BỊ LỖI PHÂN TÍCH CÚ PHÁP
-        return res.json({
-            success: true,
-            step1: step1VoucherLink,
-            step2: step2AffiliateLink
-        });
 
     } catch (error) {
         console.error("❌ Lỗi Core Hệ Thống:", error);
