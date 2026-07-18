@@ -12,21 +12,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CẤU HÌNH CỦA BẠN
 const MY_AFFILIATE_ID = "17344490003"; 
 
-// BỘ NHỚ LƯU TRỮ LINK RÚT GỌN TẠM THỜI (In-Memory Object)
-const shortLinksStorage = {};
-
 // BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
 const resolvedLinksCache = {};
-
-// HÀM TẠO CHUỖI NGẪU NHIÊN LÀM MÃ RÚT GỌN
-function generateRandomCode(length = 6) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
 
 // ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
 app.post('/api/product-info', async (req, res) => {
@@ -73,11 +60,9 @@ app.post('/api/split-link', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vui lòng cung cấp link Shopee' });
         }
 
-        // Mặc định ban đầu: Tạo biến chứa kết quả của Salesoc
         let step1VoucherLink = ""; 
 
         // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
-        // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
         try {
             const salesocResponse = await axios.post('https://salesoc.vn/api/convert-with-shelf', {
                 url: url,
@@ -115,7 +100,7 @@ app.post('/api/split-link', async (req, res) => {
                                        url;
                 }
             } else {
-                // Nếu kết nối thành công nhưng cấu trúc trả về không có success true, chặn luồng báo lỗi cho khách luôn
+                // Thất bại trong việc lấy dữ liệu thành công từ Salesoc -> Trả thông báo lỗi trực tiếp
                 return res.json({
                     success: false,
                     message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
@@ -124,7 +109,7 @@ app.post('/api/split-link', async (req, res) => {
         } catch (apiErr) {
             console.log('⚠️ Không lấy được voucher từ Salesoc (Có thể bị chặn Cloudflare/CORS):', apiErr.message);
             
-            // CẬP NHẬT MỚI: Trả lỗi trực tiếp về cho khách hàng, không sử dụng luồng link gốc dự phòng nữa
+            // CHẶN BÁO LỖI: Không gán link gốc nữa mà trả thẳng thông điệp lỗi cho client
             return res.json({
                 success: false,
                 message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
@@ -135,19 +120,8 @@ app.post('/api/split-link', async (req, res) => {
         // Kiểm tra xem trong cache riêng biệt đã lưu được link dài lấy từ Addlivetag cho URL này chưa
         const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
 
-        // Cập nhật dấu & nối chuẩn, sử dụng link dài đã encode cho origin_link để Shopee nhận diện chính xác
-        const step2RawLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
-
-        // ==================== TIẾN HÀNH RÚT GỌN NỘI BỘ BƯỚC 2 ====================
-        const shortCode = generateRandomCode(6); // Sinh mã 6 ký tự ngẫu nhiên
-        shortLinksStorage[shortCode] = step2RawLink; // Ánh xạ mã vào link đích thô
-        
-        // Lấy host và protocol động (Tự thích ứng cả localhost lẫn domain deploy chính thức)
-        const hostUrl = req.get('host'); 
-        const protocol = req.protocol; 
-        
-        // Tạo liên kết rút gọn hiển thị bằng chính tên miền của bạn
-        const step2AffiliateLink = `${protocol}://${hostUrl}/r/${shortCode}`;
+        // Trả trực tiếp link thô định dạng chuẩn của Shopee, bóc hoàn toàn luồng bọc qua endpoint /r/ nội bộ
+        const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
 
         // BẮT BUỘC LUÔN PHẢI TRẢ VỀ JSON HỢP LỆ CHO FRONTEND ĐỂ KHÔNG BỊ LỖI PHÂN TÍCH CÚ PHÁP
         return res.json({
