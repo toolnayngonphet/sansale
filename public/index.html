@@ -96,7 +96,7 @@
     <div id="workflow">
         <!-- BƯỚC 1: Hiện danh sách nút bấm tương ứng với từng luồng mã của Salesoc -->
         <div class="step-box step-1">
-            <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN CHỌN MÃ PHÙ HỢP ĐỂ LƯU (KHÔNG MUA HÀNG)</div>
+            <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN CHỌN MÃ PHÙ HỢP ĐỂ LƯU (TUYỆT ĐỐI KHÔNG MUA HÀNG)</div>
             <div class="step-desc">Lựa chọn nút lưu mã thích hợp nhất với giá trị đơn hàng của bạn ở dưới.</div>
             
             <div class="step1-nodes-container" id="step1ButtonsZone">
@@ -113,12 +113,13 @@
     </div>
 
     <div id="static-info">
+        <!-- KHỐI HƯỚNG DẪN GỐC - ĐÃ KHÔI PHỤC HOÀN TOÀN CẢNH BÁO BƯỚC 1 -->
         <div class="guide-box">
             <div class="guide-title"><i>i</i> Hướng dẫn</div>
             <div class="guide-text">
-                <strong>Bước 1:</strong> Tìm mã ưu đãi phù hợp nhất với túi tiền của bạn ở cụm nút xanh. Hệ thống mở app Shopee lên bạn chờ 3s lưu mã vào ví rồi quay lại đây.<br>
-                <span class="warning-text">(Mẹo: Khách có thể click lưu mã YTB trước, sau đó quay lại chọn lưu tiếp mã FB để làm phương án dự phòng vô tư).</span>
-                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong> dưới cùng để tiến hành áp mã ưu đãi và đặt hàng.
+                <strong>Bước 1:</strong> Tìm mã ưu đãi phù hợp nhất với túi tiền của bạn ở cụm nút xanh. App Shopee sẽ mở lên, bạn chờ 3s cho mã lưu vào ví, sau đó quay lại trang web này.<br>
+                <span class="warning-text">(Lưu ý: Bước 1 chỉ để lưu mã độc quyền. TUYỆT ĐỐI KHÔNG ĐƯỢC "MUA HÀNG" ở bước này để tránh bị Shopee quét huỷ đơn, lỗi đơn,...).</span>
+                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong>. Chọn Mua với mã giảm giá, chọn phân loại hàng và bấm mua ngay, chọn Shopee Voucher và áp mã giảm giá vào, sau đó bấm nút đặt hàng.
             </div>
         </div>
 
@@ -431,7 +432,6 @@
         }, 1000);
     }
 
-    // KÍCH HOẠT QUÉT MÃ KHI TẢI TRANG HTML XONG
     document.addEventListener('DOMContentLoaded', fetchLiveVouchers);
 </script>
 </body>
