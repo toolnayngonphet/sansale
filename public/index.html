@@ -8,8 +8,19 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background-color: #f4f6f9; color: #333; }
         .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; margin: 10px 0; box-sizing: border-box; border-radius: 6px; font-size: 15px; border: 1px solid #ccc; }
+        
+        /* CẬP NHẬT: KHU VỰC Ô NHẬP LINK CÓ NÚT DÁN */
+        .input-group { position: relative; display: flex; align-items: center; margin: 10px 0; }
+        input { width: 100%; padding: 15px 75px 15px 15px; box-sizing: border-box; border-radius: 6px; font-size: 15px; border: 1px solid #ccc; }
         input:focus { border-color: #ee4d2d; outline: none; }
+        
+        .btn-paste { position: absolute; right: 10px; background-color: #f0f0f0; color: #555; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-paste:hover { background-color: #e0e0e0; color: #222; }
+
+        /* THÊM MỚI: NÚT BẤM TẠO LINK DỰ PHÒNG THỦ CÔNG */
+        .btn-submit { width: 100%; padding: 13px; margin: 10px 0 20px 0; box-sizing: border-box; border-radius: 6px; font-size: 15px; background-color: #ee4d2d; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .btn-submit:hover { background-color: #d73a1e; }
+        .btn-submit:disabled { background-color: #f4a292 !important; cursor: not-allowed; animation: blink 1.5s infinite ease-in-out; }
         
         /* HIỆU ỨNG CHỜ TỰ ĐỘNG XỬ LÝ */
         .loading-status { display: none; text-align: center; color: #ee4d2d; font-weight: bold; margin: 15px 0; font-size: 14.5px; animation: blink 1.5s infinite ease-in-out; }
@@ -64,10 +75,18 @@
 
 <div class="container">
     <h2>Hệ Thống Săn Sale Shopee - Voucher 22%</h2>
-    <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Chỉ cần dán đường link Shopee vào đây, hệ thống sẽ tự khởi chạy.</p>
+    <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Hệ thống tự động xử lý khi dán link. Dùng nút dưới nếu lỗi tự động.</p>
     
-    <!-- LẮNG NGHE SỰ KIỆN NHẬP/DÁN LINK ĐỂ XỬ LÝ TỰ ĐỘNG -->
-    <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
+    <!-- CẬP NHẬT: Ô NHẬP LINK ĐÃ BỌC GROUP VÀ THÊM NÚT DÁN -->
+    <div class="input-group">
+        <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
+        <button type="button" class="btn-paste" onclick="pasteFromClipboard()">Dán</button>
+    </div>
+    
+    <!-- THÊM MỚI: NÚT TẠO LINK DỰ PHÒNG THỦ CÔNG -->
+    <button id="btnManualSubmit" class="btn-submit" onclick="generateWorkflow(true)">
+        <span id="btnText">TẠO LINK NGAY</span>
+    </button>
     
     <!-- DÒNG TRẠNG THÁI LOADING TỰ ĐỘNG -->
     <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
@@ -86,7 +105,7 @@
     <div id="workflow">
         <div class="step-box step-1">
             <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN ĐỂ LƯU MÃ 22% (TUYỆT ĐỐI KHÔNG MUA)</div>
-            <div class="step-desc">Mở Shopee để đưa Voucher 22% vào ví của bạn.</div>
+            <div class="step-desc">Mở Shopee để đưa Voucher 22% vào ví of bạn.</div>
             <a id="btnStep1" class="btn-go btn-1" href="#" target="_blank" onclick="markStep1Done()">1. LƯU MÃ 22%</a>
         </div>
 
@@ -111,7 +130,7 @@
             <div class="error-title"><span>⚠️</span> Trường hợp không thấy voucher</div>
             <ul>
                 <li><strong>Sản phẩm bị lọc</strong> không áp dụng được &rarr; Hãy thử sản phẩm khác.</li>
-                <li><strong>Tài khoản của bạn bị lọc</strong> &rarr; Thử nhiều sản phẩm, nhiều ngành hàng khác nhau vẫn không thấy voucher là do tài khoản.</li>
+                <li><strong>Tài khoản of bạn bị lọc</strong> &rarr; Thử nhiều sản phẩm, nhiều ngành hàng khác nhau vẫn không thấy voucher là do tài khoản.</li>
                 <li><strong>Voucher hết lượt</strong> &rarr; Hãy canh các khung giờ 0h, 9h, 12h, 15h, 18h, 21h để mua.</li>
             </ul>
         </div>
@@ -138,43 +157,64 @@
 
 <script>
     let delayTimer;
-    const typingDelay = 400; // Đợi người dùng dừng thao tác gõ/dán liên kết khoảng 0.4s sẽ tự chạy
+    const typingDelay = 400; 
+
+    // THÊM MỚI: Hàm đọc bộ nhớ tạm và tự động chạy luồng sinh link khi nhấn nút "Dán"
+    async function pasteFromClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                const inputElement = document.getElementById('shopeeUrl');
+                inputElement.value = text.trim();
+                triggerAutoRun(); 
+            }
+        } catch (err) {
+            alert('Trình duyệt chặn quyền hoặc không hỗ trợ dán nhanh. Bạn vui lòng đè nhấn đúp vào ô nhập để dán thủ công nhé.');
+        }
+    }
 
     function triggerAutoRun() {
         clearTimeout(delayTimer);
         const url = document.getElementById('shopeeUrl').value.trim();
         
-        // Kiểm tra điều kiện định dạng thô trước khi kích hoạt hàm gọi API tự động
         if (url && (url.includes('shopee.vn') || url.includes('shp.ee'))) {
-            delayTimer = setTimeout(generateWorkflow, typingDelay);
+            delayTimer = setTimeout(() => generateWorkflow(false), typingDelay);
         }
     }
 
-    async function generateWorkflow() {
+    // CẬP NHẬT: Hàm core xử lý chấp nhận tham số isManual để phân biệt luồng bấm thủ công hay tự động dán
+    async function generateWorkflow(isManual = false) {
         const url = document.getElementById('shopeeUrl').value.trim();
-        if(!url) return;
+        if(!url) {
+            if (isManual) alert('Vui lòng dán link Shopee vào!');
+            return;
+        }
 
+        const btnManualSubmit = document.getElementById('btnManualSubmit');
+        const btnText = document.getElementById('btnText');
         const loadingStatus = document.getElementById('loadingStatus');
         const productCard = document.getElementById('productInfoCard');
         const workflow = document.getElementById('workflow');
         const box2 = document.getElementById('boxStep2');
         const btn2 = document.getElementById('btnStep2');
         
-        // Trạng thái khởi tạo: Bật dòng loading, ẩn hoàn toàn các box hiển thị kết quả cũ
+        // Cập nhật giao diện trạng thái chờ xử lý cho nút bấm và dòng text
         loadingStatus.style.display = 'block';
+        btnText.innerText = 'ĐANG XỬ LÝ...';
+        btnManualSubmit.disabled = true;
+
         productCard.style.display = 'none';
         workflow.style.display = 'none';
         box2.style.opacity = "0.4";
         btn2.setAttribute('style', 'pointer-events: none; background-color: #9e9e9e;');
 
         try {
-            // Chạy song song hai luồng API giúp giảm thời gian phản hồi (Latency) xuống tối đa
             const [infoResponse, splitResponse] = await Promise.all([
                 fetch('/api/product-info', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
-                }).then(res => res.json()).catch(() => null), // Đắp catch rỗng phòng lỗi API thông tin không phá hỏng luồng split link
+                }).then(res => res.json()).catch(() => null),
 
                 fetch('/api/split-link', {
                     method: 'POST',
@@ -183,7 +223,6 @@
                 }).then(res => res.json())
             ]);
 
-            // 1. ĐỔ DỮ LIỆU SẢN PHẨM LÊN THẺ (NẾU CÓ THÀNH CÔNG)
             if (infoResponse && infoResponse.success) {
                 document.getElementById('cardTitle').innerText = infoResponse.productName;
                 document.getElementById('cardPrice').innerText = Number(infoResponse.price).toLocaleString('vi-VN') + 'đ';
@@ -192,7 +231,6 @@
                 productCard.style.display = 'block';
             }
 
-            // 2. ĐỔ LINK SĂN SALE VÀO WORKFLOW 2 BƯỚC
             if (splitResponse && splitResponse.success) {
                 document.getElementById('btnStep1').href = splitResponse.step1;
                 document.getElementById('btnStep2').href = splitResponse.step2;
@@ -204,7 +242,9 @@
             console.error(err);
             alert('Lỗi kết nối Server: ' + err.message);
         } finally {
-            loadingStatus.style.display = 'none'; // Tắt dòng loading sau khi xử lý xong tất cả
+            loadingStatus.style.display = 'none';
+            btnText.innerText = 'TẠO LINK NGAY';
+            btnManualSubmit.disabled = false;
         }
     }
 
