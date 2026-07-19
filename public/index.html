@@ -402,13 +402,14 @@
         ];
 
         platformsConfig.forEach(p => {
+            // KIỂM TRA CHUỖI TRỐNG: Nếu link trống (như luồng YTB khi không tham gia CT), bỏ qua không render nút
             if (!p.link || p.link.trim() === "") return;
+            
             const matched = liveVouchersCache.filter(p.filter).filter(v => v.status !== 'expired' && v.usage_progress < 100);
             const voucherDetailText = matched.length > 0 
                 ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
                 : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
 
-            // THÊM LẠI target="_blank" CHO CỤM NÚT ĐỘNG
             const nodeHTML = `
                 <div class="voucher-node-card">
                     <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()">1. MỞ LINK LƯU: ${p.label}</a>
@@ -439,9 +440,9 @@
                 url: shopeeUrl,
                 title: productName,
                 time: timeStr,
-                ytb: splitResult.step2 || "",
-                fb: splitResult.step2 || "",
-                ig: splitResult.step2 || ""
+                ytb: splitResult.ytbLink ? splitResult.step2 : "", // Chỉ lưu nếu luồng gốc hợp lệ
+                fb: splitResult.fbLink ? splitResult.step2 : "",
+                ig: splitResult.igLink ? splitResult.step2 : ""
             };
 
             currentHistory = currentHistory.filter(item => item.url !== shopeeUrl);
@@ -474,7 +475,6 @@
 
             platforms.forEach(p => {
                 if(!p.link || p.link.trim() === "") return;
-                // THÊM LẠI target="_blank" CHO DANH SÁCH LỊCH SỬ
                 rowLinksHTML += `
                     <div class="hist-link-row">
                         <span class="hist-badge ${p.class}">${p.name}</span>
