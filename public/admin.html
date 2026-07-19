@@ -29,6 +29,14 @@
         .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #8fa0b5; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-card .value { font-size: 32px; font-weight: bold; color: #fb923c; }
 
+        /* Cụm hành động tác vụ */
+        .action-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .btn-action { color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13.5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-refresh { background-color: #2d3d54; border: 1px solid #3b5271; }
+        .btn-refresh:hover { background-color: #3b5271; }
+        .btn-clear { background-color: #7f1d1d; border: 1px solid #991b1b; }
+        .btn-clear:hover { background-color: #991b1b; }
+
         h3.section-title { font-size: 16px; color: #cbd5e1; border-left: 4px solid #ee4d2d; padding-left: 8px; margin-top: 30px; margin-bottom: 15px; }
         
         .table-wrapper { width: 100%; overflow-x: auto; background: #101726; border: 1px solid #1e293b; border-radius: 10px; }
@@ -41,9 +49,6 @@
         .link-text:hover { text-decoration: underline; }
         .count-badge { background: #241416; color: #f87171; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
         
-        .btn-refresh { background-color: #2d3d54; color: #fff; border: 1px solid #3b5271; padding: 8px 16px; border-radius: 6px; font-size: 13.5px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto 20px auto; transition: 0.2s; }
-        .btn-refresh:hover { background-color: #3b5271; }
-
         /* Thanh Điều Hướng Phân Trang (Pagination) */
         .pagination-container { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; padding: 10px 0; }
         .page-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
@@ -76,7 +81,11 @@
         </div>
         <div class="subtitle">Dữ liệu thống kê tự động lưu trữ và tự xóa sau 7 ngày</div>
 
-        <button class="btn-refresh" onclick="refreshAllData()">🔄 Làm mới dữ liệu</button>
+        <!-- CỤM HÀNH ĐỘNG TÁC VỤ -->
+        <div class="action-bar">
+            <button class="btn-action btn-refresh" onclick="refreshAllData()">🔄 Làm mới dữ liệu</button>
+            <button class="btn-action btn-clear" onclick="clearAllAdminLogs()">🔥 Xóa tất cả nhật ký</button>
+        </div>
 
         <div class="dashboard-grid">
             <div class="stat-card">
@@ -177,6 +186,35 @@
     function refreshAllData() {
         loadOverviewStats();
         loadPagedLogs(currentPage);
+    }
+
+    // Gửi yêu cầu DELETE lên Server để dọn dẹp Database chủ động
+    async function clearAllAdminLogs() {
+        if (!confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn XÓA SẠCH toàn bộ dữ liệu thống kê và lịch sử tạo liên kết hiện tại không? Hành động này không thể phục hồi!")) {
+            return;
+        }
+
+        const token = localStorage.getItem('admin_session_token');
+        try {
+            const res = await fetch('/api/admin/clear-logs', {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.status === 401) { handleLogout(); return; }
+            const data = await res.json();
+
+            if (data.success) {
+                alert(data.message);
+                currentPage = 1; // Reset về trang đầu
+                refreshAllData(); // Reload lại bảng trống
+            } else {
+                alert("Xóa nhật ký thất bại: " + data.message);
+            }
+        } catch (err) {
+            console.error("Lỗi xóa dữ liệu:", err);
+            alert("Không thể kết nối đến máy chủ để dọn dẹp dữ liệu.");
+        }
     }
 
     // 1. Tải số liệu tổng quan & top sản phẩm hot (API: overview)
