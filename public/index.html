@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lấy voucher 22% áp dụng cho mọi sản phẩm</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background-color: #f4f6f9; color: #333; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background-color: #070b12; color: #fff; }
+        .container { background: #0f1622; padding: 30px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); border: 1px solid #1e293b; }
         h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
         
         .input-group { position: relative; display: flex; align-items: center; margin: 10px 0; }
-        input { width: 100%; padding: 15px 75px 15px 15px; box-sizing: border-box; border-radius: 6px; font-size: 15px; border: 1px solid #ccc; }
+        input { width: 100%; padding: 15px 75px 15px 15px; box-sizing: border-box; border-radius: 6px; font-size: 15px; border: 1px solid #2d3d54; background: #16202e; color: #fff; }
         input:focus { border-color: #ee4d2d; outline: none; }
         
-        .btn-paste { position: absolute; right: 10px; background-color: #f0f0f0; color: #555; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-paste:hover { background-color: #e0e0e0; color: #222; }
+        .btn-paste { position: absolute; right: 10px; background-color: #2d3d54; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-paste:hover { background-color: #3b5271; color: #fff; }
 
         .btn-submit { width: 100%; padding: 13px; margin: 10px 0 20px 0; box-sizing: border-box; border-radius: 6px; font-size: 15px; background-color: #ee4d2d; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .btn-submit:hover { background-color: #d73a1e; }
-        .btn-submit:disabled { background-color: #f4a292 !important; cursor: not-allowed; animation: blink 1.5s infinite ease-in-out; }
+        .btn-submit:disabled { background-color: #334155 !important; color: #64748b; cursor: not-allowed; animation: blink 1.5s infinite ease-in-out; }
         
         .loading-status { display: none; text-align: center; color: #ee4d2d; font-weight: bold; margin: 15px 0; font-size: 14.5px; animation: blink 1.5s infinite ease-in-out; }
         
-        #productInfoCard { display: none; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin: 15px 0; }
-        .prod-title { font-weight: bold; font-size: 14.5px; color: #212529; line-height: 1.4; margin-bottom: 8px; }
-        .prod-meta-wrapper { display: flex; gap: 15px; font-size: 13px; color: #6c757d; align-items: center; }
+        #productInfoCard { display: none; background-color: #131c2a; border: 1px solid #223147; border-radius: 10px; padding: 15px; margin: 15px 0; }
+        .prod-title { font-weight: bold; font-size: 14.5px; color: #fff; line-height: 1.4; margin-bottom: 8px; }
+        .prod-meta-wrapper { display: flex; gap: 15px; font-size: 13px; color: #8fa0b5; align-items: center; }
         .prod-price-text { color: #ee4d2d; font-weight: bold; font-size: 16px; }
 
         @keyframes blink {
@@ -32,16 +32,15 @@
             50% { opacity: 0.6; }
         }
         
-        #workflow { display: none; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px dashed #e0e0e0; }
-        .step-box { background: #fff; border: 2px dashed #ddd; padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
-        .step-1 { border-color: #007bff; background-color: #f0f7ff; }
-        .step-2 { border-color: #ee4d2d; background-color: #fff5f2; }
+        #workflow { display: none; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px dashed #2d3d54; }
+        .step-box { background: #131c2a; border: 2px dashed #2d3d54; padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .step-1 { border-color: #007bff; background-color: #0f1e36; }
+        .step-2 { border-color: #ee4d2d; background-color: #241416; }
         .step-num { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        .step-desc { font-size: 13px; color: #666; margin-bottom: 15px; }
+        .step-desc { font-size: 13px; color: #8fa0b5; margin-bottom: 15px; }
         
-        /* CẤU TRÚC CONTAINER PHÂN TÁCH NÚT CHỌN MÃ BƯỚC 1 */
         .step1-nodes-container { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 15px; width: 100%; }
-        .voucher-node-card { width: 90%; background: #ffffff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-align: left; }
+        .voucher-node-card { width: 90%; background: #16202e; border: 1px solid #27374f; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); text-align: left; }
         
         .btn-go { display: inline-block; padding: 12px 35px; color: white; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 15px; width: 100%; box-sizing: border-box; text-align: center; }
         .btn-fb { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
@@ -50,71 +49,115 @@
         .btn-2 { background-color: #ee4d2d; width: 90%; }
         .btn-2:hover { background-color: #d73a1e; }
 
-        .guide-box { background-color: #f7f9fc; border: 1px solid #ffe2d1; border-radius: 12px; padding: 20px; margin-bottom: 20px; line-height: 1.6; font-size: 14.5px; }
-        .guide-title { display: flex; align-items: center; font-size: 17px; font-weight: bold; color: #007bff; margin-bottom: 12px; }
-        .guide-title i { display: inline-block; width: 20px; height: 20px; background: #007bff; color: white; border-radius: 50%; text-align: center; line-height: 20px; font-style: normal; font-size: 12px; margin-right: 8px; font-weight: bold; }
-        .warning-text { color: #d9381e; font-style: italic; font-weight: bold; display: block; margin: 8px 0; padding: 6px 10px; background-color: #fff3f1; border-left: 3px solid #d9381e; border-radius: 4px; }
-        .error-case-box { background-color: #fffde7; border: 1px solid #fff59d; border-radius: 12px; padding: 20px; margin-bottom: 25px; font-size: 14.5px; line-height: 1.6; }
-        .error-title { font-size: 17px; font-weight: bold; color: #d84315; margin-bottom: 12px; display: flex; align-items: center; }
+        .guide-box { background-color: #16202e; border: 1px solid #2d3d54; border-radius: 12px; padding: 20px; margin-bottom: 20px; line-height: 1.6; font-size: 14.5px; }
+        .guide-title { display: flex; align-items: center; font-size: 17px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; }
+        .guide-title i { display: inline-block; width: 20px; height: 20px; background: #38bdf8; color: #000; border-radius: 50%; text-align: center; line-height: 20px; font-style: normal; font-size: 12px; margin-right: 8px; font-weight: bold; }
+        .warning-text { color: #f87171; font-style: italic; font-weight: bold; display: block; margin: 8px 0; padding: 6px 10px; background-color: #3a1a1a; border-left: 3px solid #f87171; border-radius: 4px; }
+        .error-case-box { background-color: #1a2333; border: 1px solid #2d3d54; border-radius: 12px; padding: 20px; margin-bottom: 25px; font-size: 14.5px; line-height: 1.6; }
+        .error-title { font-size: 17px; font-weight: bold; color: #fb923c; margin-bottom: 12px; display: flex; align-items: center; }
         .error-title span { margin-right: 8px; font-size: 18px; }
         .error-case-box ul { margin: 0; padding-left: 20px; }
-        .error-case-box li { margin-bottom: 10px; color: #444; }
-        .error-case-box li strong { color: #d84315; }
+        .error-case-box li { margin-bottom: 10px; color: #cbd5e1; }
+        .error-case-box li strong { color: #fb923c; }
 
-        .dynamic-voucher-card { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; background: #10141d; color: #fff; padding: 18px; }
+        .dynamic-voucher-card { border: 1px solid #232d3d; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-bottom: 20px; background: #10141d; color: #fff; padding: 18px; }
         .history-box { background: #161c26; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #232d3d; }
         .history-title { font-size: 13px; color: #8fa0b5; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; }
+
+        /* ==================== STYLE HỆ THỐNG TAB & LỊCH SỬ MỚI ==================== */
+        .tab-wrapper { display: flex; background: #111827; border: 1px solid #1f2937; padding: 4px; border-radius: 8px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14.5px; border: none; background: transparent; color: #9ca3af; transition: 0.2s; }
+        .tab-btn.active { background: #1f2937; color: #fb923c; border: 1px solid #374151; }
+
+        #tab-single-view, #tab-history-view { display: none; }
+        #tab-single-view.active, #tab-history-view.active { display: block; }
+
+        .history-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #8fa0b5; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-clear-all { color: #f87171; cursor: pointer; background: transparent; border: none; font-weight: bold; }
+        .btn-clear-all:hover { text-decoration: underline; }
+
+        .hist-item-box { background: #101726; border: 1px solid #1e293b; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .hist-prod-info { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 10px; }
+        .hist-img-placeholder { width: 50px; height: 50px; border-radius: 6px; background: #1d283d; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid #2d3d54; }
+        .hist-title-txt { font-size: 13.5px; font-weight: bold; line-height: 1.4; color: #fff; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .hist-url-txt { font-size: 11.5px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+        .hist-time-txt { font-size: 11px; color: #475569; margin-top: 2px; }
+
+        .hist-link-row { display: flex; align-items: center; justify-content: space-between; background: #162238; margin: 6px 0; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
+        .hist-badge { font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 4px; min-width: 35px; text-align: center; }
+        .badge-fb-mini { background: #1e3a8a; color: #38bdf8; }
+        .badge-ytb-mini { background: #7f1d1d; color: #f87171; }
+        .badge-ig-mini { background: #701a75; color: #f472b6; }
+        .hist-link-url { font-family: monospace; color: #cbd5e1; flex: 1; margin: 0 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+        
+        .hist-actions { display: flex; gap: 6px; }
+        .btn-mini-action { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; text-decoration: none; }
+        .btn-mini-action:hover { background: #334155; color: #fff; }
+        .btn-mini-go { background: #064e3b; color: #34d399; border-color: #047857; }
+        .btn-mini-go:hover { background: #047857; color: #fff; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Áp Mã Giảm Giá Độc Quyền</h2>
-    <p style="text-align:center; font-size:14px; color:#555; margin-top:-10px;">Hệ thống tự động xử lý khi dán link. Dùng nút dưới nếu lỗi tự động.</p>
-    
-    <div class="input-group">
-        <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
-        <button type="button" class="btn-paste" onclick="pasteFromClipboard()">Dán</button>
-    </div>
-    
-    <button id="btnManualSubmit" class="btn-submit" onclick="generateWorkflow(true)">
-        <span id="btnText">TẠO LINK NGAY</span>
-    </button>
-    
-    <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
 
-    <div id="productInfoCard">
-        <div id="cardTitle" class="prod-title">Đang nạp tên mặt hàng...</div>
-        <div class="prod-meta-wrapper">
-            <span>Giá bán: <span id="cardPrice" class="prod-price-text">0đ</span></span>
-            <span>Đã bán: <span id="cardSales" style="font-weight: bold; color: #212529;">0</span></span>
-            <span>Đánh giá: <span id="cardRating" style="color: #ffc107; font-weight: bold;">0★</span></span>
+    <!-- THANH CHUYỂN ĐỔI TAB (ĐƠN LẺ / LỊCH SỬ) -->
+    <div class="tab-wrapper">
+        <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Đơn lẻ</button>
+        <button class="tab-btn" id="tab-history" onclick="switchTab('history')">Lịch sử</button>
+    </div>
+
+    <!-- TAB VIEW 1: CHẾ ĐỘ ĐƠN LẺ GỐC -->
+    <div id="tab-single-view" class="active">
+        <p style="text-align:center; font-size:14px; color:#8fa0b5; margin-top:-10px;">Hệ thống tự động xử lý khi dán link. Dùng nút dưới nếu lỗi tự động.</p>
+        
+        <div class="input-group">
+            <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
+            <button type="button" class="btn-paste" onclick="pasteFromClipboard()">Dán</button>
         </div>
-    </div>
+        
+        <button id="btnManualSubmit" class="btn-submit" onclick="generateWorkflow(true)">
+            <span id="btnText">TẠO LINK NGAY</span>
+        </button>
+        
+        <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
 
-    <!-- KHU VỰC HIỂN THỊ KẾT QUẢ LINK THEO 2 BƯỚC HOÀN CHỈNH -->
-    <div id="workflow">
-        <!-- BƯỚC 1: Hiện danh sách nút bấm tương ứng với từng luồng mã của Salesoc -->
-        <div class="step-box step-1">
-            <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN CHỌN MÃ PHÙ HỢP ĐỂ LƯU (TUYỆT ĐỐI KHÔNG MUA HÀNG)</div>
-            <div class="step-desc">Lựa chọn nút lưu mã thích hợp nhất với giá trị đơn hàng của bạn ở dưới.</div>
-            
-            <div class="step1-nodes-container" id="step1ButtonsZone">
-                <!-- Nút của từng nền tảng kèm text ưu đãi động được render tại đây -->
+        <div id="productInfoCard">
+            <div id="cardTitle" class="prod-title">Đang nạp tên mặt hàng...</div>
+            <div class="prod-meta-wrapper">
+                <span>Giá bán: <span id="cardPrice" class="prod-price-text">0đ</span></span>
+                <span>Đã bán: <span id="cardSales" style="font-weight: bold; color: #fff;">0</span></span>
+                <span>Đánh giá: <span id="cardRating" style="color: #ffc107; font-weight: bold;">0★</span></span>
             </div>
         </div>
 
-        <!-- BƯỚC 2: Giữ nguyên một nút cam duy nhất chốt đơn cuối cùng -->
-        <div class="step-box step-2" id="boxStep2" style="opacity: 0.4;">
-            <div class="step-num" style="color: #ee4d2d;">BƯỚC 2: ẤN ĐỂ MUA VÀ ÁP MÃ HỢP LỆ</div>
-            <div class="step-desc">Nhấp vào đây để chốt đơn hàng và áp cái mã bạn vừa chọn mở lưu ở Bước 1.</div>
-            <!-- ĐỂ ĐẢM BẢO KHÔNG BẬT TAB MỚI, ĐÃ BỎ TRƯỜNG target="_blank" -->
-            <a id="btnStep2" class="btn-go btn-2" href="#" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
+        <div id="workflow">
+            <div class="step-box step-1">
+                <div class="step-num" style="color: #007bff;">BƯỚC 1: ẤN CHỌN MÃ PHÙ HỢP ĐỂ LƯU (TUYỆT ĐỐI KHÔNG MUA HÀNG)</div>
+                <div class="step-desc">Lựa chọn nút lưu mã thích hợp nhất với giá trị đơn hàng của bạn ở dưới.</div>
+                <div class="step1-nodes-container" id="step1ButtonsZone"></div>
+            </div>
+
+            <div class="step-box step-2" id="boxStep2" style="opacity: 0.4;">
+                <div class="step-num" style="color: #ee4d2d;">BƯỚC 2: ẤN ĐỂ MUA VÀ ÁP MÃ HỢP LỆ</div>
+                <div class="step-desc">Nhấp vào đây để chốt đơn hàng và áp cái mã bạn vừa chọn mở lưu ở Bước 1.</div>
+                <a id="btnStep2" class="btn-go btn-2" href="#" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
+            </div>
         </div>
     </div>
 
+    <!-- TAB VIEW 2: CHẾ ĐỘ XEM LỊCH SỬ CHUYỂN ĐỔI -->
+    <div id="tab-history-view">
+        <div class="history-header-bar">
+            <span>Lịch sử chuyển đổi</span>
+            <button class="btn-clear-all" onclick="clearAllHistory()">Xóa tất cả</button>
+        </div>
+        <div id="historyContainerTarget"></div>
+    </div>
+
+    <!-- PHẦN THÔNG TIN VÀ LIVE VOUCHERS DÙNG CHUNG PHÍA DƯỚI -->
     <div id="static-info">
-        <!-- KHỐI HƯỚNG DẪN GỐC - ĐÃ KHÔI PHỤC HOÀN TOÀN CẢNH BÁO BƯỚC 1 -->
         <div class="guide-box">
             <div class="guide-title"><i>i</i> Hướng dẫn</div>
             <div class="guide-text">
@@ -133,7 +176,7 @@
             </ul>
         </div>
 
-        <h3 style="margin-top: 25px; font-size: 16px; color: #444; border-left: 4px solid #ee4d2d; padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
+        <h3 style="margin-top: 25px; font-size: 16px; color: #cbd5e1; border-left: 4px solid #ee4d2d; padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
         <div id="voucher-container" style="margin-bottom: 25px;">
             <p style="font-size: 13px; color: #888; text-align: center; padding: 10px;">Đang tải danh sách dữ liệu mã giảm giá...</p>
         </div>
@@ -145,13 +188,29 @@
     let liveVouchersCache = [];
     const typingDelay = 400; 
 
-    // LUỒNG TỰ ĐỘNG BỐC VOUCHER ĐỘNG KHI TẢI TRANG
+    // Hàm chuyển đổi qua lại giữa các tab
+    function switchTab(tabName) {
+        document.getElementById('tab-single').classList.remove('active');
+        document.getElementById('tab-history').classList.remove('active');
+        document.getElementById('tab-single-view').classList.remove('active');
+        document.getElementById('tab-history-view').classList.remove('active');
+
+        if(tabName === 'single') {
+            document.getElementById('tab-single').classList.add('active');
+            document.getElementById('tab-single-view').classList.add('active');
+        } else {
+            document.getElementById('tab-history').classList.add('active');
+            document.getElementById('tab-history-view').classList.add('active');
+            renderHistoryList(); 
+        }
+    }
+
     async function fetchLiveVouchers() {
         try {
             const res = await fetch('/api/vouchers');
             const data = await res.json();
             if (data.success && data.vouchers) {
-                liveVouchersCache = data.vouchers; // Lưu bộ nhớ đệm phục vụ hiển thị
+                liveVouchersCache = data.vouchers; 
                 renderLiveVouchers(data.vouchers);
             } else {
                 document.getElementById('voucher-container').innerHTML = `<p style="font-size:13px; color:#d9381e; text-align:center;">${data.message || 'Không thể đồng bộ danh sách mã.'}</p>`;
@@ -164,7 +223,7 @@
 
     function renderLiveVouchers(vouchers) {
         const container = document.getElementById('voucher-container');
-        container.innerHTML = ''; // Clear thông báo chờ
+        container.innerHTML = ''; 
 
         vouchers.forEach((v, index) => {
             const isExpired = v.status === 'expired' || v.fully_used === 1 || v.usage_progress >= 100;
@@ -182,25 +241,15 @@
                             ${statusText}
                         </span>
                     </div>
-                    
-                    <h3 style="margin:8px 0 4px 0; font-size:22px; font-family:monospace; color:#fff; font-weight:bold;">
-                        ${v.voucher_code}
-                    </h3>
-                    
-                    <p style="margin:0 0 12px 0; font-size:13.5px; color:#cdd5de; background:#1b2230; padding:8px 12px; border-radius:4px; border-left:3px solid ${progressColor};">
-                        ${v.description}
-                    </p>
-                    
+                    <h3 style="margin:8px 0 4px 0; font-size:22px; font-family:monospace; color:#fff; font-weight:bold;">${v.voucher_code}</h3>
+                    <p style="margin:0 0 12px 0; font-size:13.5px; color:#cdd5de; background:#1b2230; padding:8px 12px; border-radius:4px; border-left:3px solid ${progressColor};">${v.description}</p>
                     <div style="display:flex; justify-content:space-between; font-size:12.5px; color:#8fa0b5; margin-bottom:6px;">
                         <span>Tỷ lệ đã sử dụng</span>
                         <span style="color:${progressColor}; font-weight:bold;">${v.usage_progress}%</span>
                     </div>
-                    
                     <div style="width:100%; background:#232d3d; height:8px; border-radius:4px; overflow:hidden;">
                         <div style="width:${v.usage_progress}%; background:${progressColor}; height:100%; border-radius:4px; transition:width 0.6s ease;"></div>
                     </div>
-
-                    <!-- KHU VỰC ĐỒ THỊ TIMELINE DÒNG THỜI GIAN -->
                     ${v.usage_progress_history && v.usage_progress_history.length > 0 ? `
                         <div class="history-box">
                             <div class="history-title">
@@ -215,7 +264,6 @@
 
             container.insertAdjacentHTML('beforeend', html);
 
-            // Bắt đầu vẽ đồ thị Timeline bằng HTML5 Canvas nếu có lịch sử
             if (v.usage_progress_history && v.usage_progress_history.length > 0) {
                 setTimeout(() => drawTimelineGraph(cardId, v.usage_progress_history, progressColor), 50);
             }
@@ -229,21 +277,14 @@
         const width = canvas.width;
         const height = canvas.height;
 
-        const paddingLeft = 30;
-        const paddingRight = 20;
-        const paddingTop = 15;
-        const paddingBottom = 25;
+        const paddingLeft = 30; const paddingRight = 20; const paddingTop = 15; const paddingBottom = 25;
         const graphWidth = width - paddingLeft - paddingRight;
         const graphHeight = height - paddingTop - paddingBottom;
 
-        ctx.strokeStyle = '#1f2a3c';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#1f2a3c'; ctx.lineWidth = 1;
         [0, 0.5, 1].forEach(ratio => {
             const y = paddingTop + graphHeight * ratio;
-            ctx.beginPath();
-            ctx.moveTo(paddingLeft, y);
-            ctx.lineTo(width - paddingRight, y);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(paddingLeft, y); ctx.lineTo(width - paddingRight, y); ctx.stroke();
         });
 
         const points = historyData.map((d, index) => {
@@ -252,30 +293,18 @@
             return { x, y, time: d.time };
         });
 
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        points.forEach((p, idx) => {
-            if (idx === 0) ctx.moveTo(p.x, p.y);
-            else ctx.lineTo(p.x, p.y);
-        });
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+        points.forEach((p, idx) => { if (idx === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
         ctx.stroke();
 
-        ctx.fillStyle = color;
-        ctx.font = '11px sans-serif';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = color; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
         
         const labelInterval = Math.ceil(points.length / 6);
 
         points.forEach((p, idx) => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI);
-            ctx.fill();
-
+            ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI); ctx.fill();
             if (idx % labelInterval === 0 || idx === points.length - 1) {
-                ctx.fillStyle = '#6f8299';
-                ctx.fillText(p.time, p.x, height - 6);
-                ctx.fillStyle = color;
+                ctx.fillStyle = '#6f8299'; ctx.fillText(p.time, p.x, height - 6); ctx.fillStyle = color;
             }
         });
     }
@@ -296,7 +325,6 @@
     function triggerAutoRun() {
         clearTimeout(delayTimer);
         const url = document.getElementById('shopeeUrl').value.trim();
-        
         if (url && (url.includes('shopee.vn') || url.includes('shp.ee'))) {
             delayTimer = setTimeout(() => generateWorkflow(false), typingDelay);
         }
@@ -304,10 +332,7 @@
 
     async function generateWorkflow(isManual = false) {
         const url = document.getElementById('shopeeUrl').value.trim();
-        if(!url) {
-            if (isManual) alert('Vui lòng dán link Shopee vào!');
-            return;
-        }
+        if(!url) { if (isManual) alert('Vui lòng dán link Shopee vào!'); return; }
 
         const btnManualSubmit = document.getElementById('btnManualSubmit');
         const btnText = document.getElementById('btnText');
@@ -320,7 +345,6 @@
         loadingStatus.style.display = 'block';
         btnText.innerText = 'ĐANG XỬ LÝ...';
         btnManualSubmit.disabled = true;
-
         productCard.style.display = 'none';
         workflow.style.display = 'none';
         box2.style.opacity = "0.4";
@@ -341,8 +365,10 @@
                 }).then(res => res.json())
             ]);
 
+            let pName = "Sản phẩm Shopee";
             if (infoResponse && infoResponse.success) {
-                document.getElementById('cardTitle').innerText = infoResponse.productName;
+                pName = infoResponse.productName;
+                document.getElementById('cardTitle').innerText = pName;
                 document.getElementById('cardPrice').innerText = Number(infoResponse.price).toLocaleString('vi-VN') + 'đ';
                 document.getElementById('cardSales').innerText = infoResponse.sales;
                 document.getElementById('cardRating').innerText = infoResponse.rating + '★';
@@ -350,75 +376,43 @@
             }
 
             if (splitResponse && splitResponse.success) {
-                // Đút link sạch Bước 2 vào nút Cam cố định dưới cùng
                 document.getElementById('btnStep2').href = splitResponse.step2;
-                
-                // Kết xuất cụm nút chọn mã động cho khối Bước 1
                 buildStep1DynamicButtons(splitResponse);
-                
                 workflow.style.display = 'block';
+
+                // TỰ ĐỘNG GHI DỮ LIỆU LỊCH SỬ KHI BIẾN ĐỔI LINK THÀNH CÔNG
+                saveToHistoryLocalStorage(url, pName, splitResponse);
             } else {
                 alert(splitResponse.message || 'Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
             }
         } catch (err) {
-            console.error(err);
-            alert('Lỗi kết nối Server: ' + err.message);
+            console.error(err); alert('Lỗi kết nối Server: ' + err.message);
         } finally {
-            loadingStatus.style.display = 'none';
-            btnText.innerText = 'TẠO LINK NGAY';
-            btnManualSubmit.disabled = false;
+            loadingStatus.style.display = 'none'; btnText.innerText = 'TẠO LINK NGAY'; btnManualSubmit.disabled = false;
         }
     }
 
-    // Thuật toán bóc tách kết xuất cụm chọn mã động cho Bước 1
     function buildStep1DynamicButtons(linksData) {
         const zone = document.getElementById('step1ButtonsZone');
         zone.innerHTML = '';
 
         const platformsConfig = [
-            {
-                key: 'fbLink',
-                label: 'MÃ FACEBOOK (FB)',
-                btnClass: 'btn-fb',
-                link: linksData.fbLink,
-                filter: (v) => v.voucher_code.toUpperCase().includes('META') || v.voucher_code.toUpperCase().includes('PAR')
-            },
-            {
-                key: 'ytbLink',
-                label: 'MÃ YOUTUBE (YTB)',
-                btnClass: 'btn-ytb',
-                link: linksData.ytbLink,
-                filter: (v) => v.voucher_code.toUpperCase().includes('YOUTUBE') || v.voucher_code.toUpperCase().includes('YT')
-            },
-            {
-                key: 'igLink',
-                label: 'MÃ INSTAGRAM (IG)',
-                btnClass: 'btn-ig',
-                link: linksData.igLink,
-                filter: (v) => v.voucher_code.toUpperCase().includes('IG') || v.voucher_code.toUpperCase().includes('INSTA')
-            }
+            { key: 'fbLink', label: 'MÃ FACEBOOK (FB)', btnClass: 'btn-fb', link: linksData.fbLink, filter: (v) => v.voucher_code.toUpperCase().includes('META') || v.voucher_code.toUpperCase().includes('PAR') },
+            { key: 'ytbLink', label: 'MÃ YOUTUBE (YTB)', btnClass: 'btn-ytb', link: linksData.ytbLink, filter: (v) => v.voucher_code.toUpperCase().includes('YOUTUBE') || v.voucher_code.toUpperCase().includes('YT') },
+            { key: 'igLink', label: 'MÃ INSTAGRAM (IG)', btnClass: 'btn-ig', link: linksData.igLink, filter: (v) => v.voucher_code.toUpperCase().includes('IG') || v.voucher_code.toUpperCase().includes('INSTA') }
         ];
 
         platformsConfig.forEach(p => {
-            // Tự động ẩn nút nếu Salesoc không trả ra luồng link tương ứng của nền tảng này
             if (!p.link || p.link.trim() === "") return;
-
-            // Tìm chi tiết thông tin mã sống (%) tương ứng từ mảng tổng để ghi nhãn mô tả dưới nút
             const matched = liveVouchersCache.filter(p.filter).filter(v => v.status !== 'expired' && v.usage_progress < 100);
-            
             const voucherDetailText = matched.length > 0 
                 ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
                 : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
 
             const nodeHTML = `
                 <div class="voucher-node-card">
-                    <!-- ĐỂ ĐẢM BẢO KHÔNG BẬT TAB MỚI, ĐÃ BỎ TRƯỜNG target="_blank" -->
-                    <a class="btn-go ${p.btnClass}" href="${p.link}" onclick="markStep1Done()">
-                        1. MỞ LINK LƯU: ${p.label}
-                    </a>
-                    <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">
-                        🔥 ${voucherDetailText}
-                    </div>
+                    <a class="btn-go ${p.btnClass}" href="${p.link}" onclick="markStep1Done()">1. MỞ LINK LƯU: ${p.label}</a>
+                    <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">🔥 ${voucherDetailText}</div>
                 </div>
             `;
             zone.insertAdjacentHTML('beforeend', nodeHTML);
@@ -427,11 +421,103 @@
 
     function markStep1Done() {
         setTimeout(() => {
-            const box2 = document.getElementById('boxStep2');
-            const btn2 = document.getElementById('btnStep2');
-            box2.style.opacity = "1";
-            btn2.removeAttribute('style'); 
+            const box2 = document.getElementById('boxStep2'); const btn2 = document.getElementById('btnStep2');
+            box2.style.opacity = "1"; btn2.removeAttribute('style'); 
         }, 1000);
+    }
+
+    // ==================== CƠ CHẾ LƯU TRỮ LỊCH SỬ LOCALSTORAGE ====================
+    function saveToHistoryLocalStorage(shopeeUrl, productName, splitResult) {
+        try {
+            let currentHistory = JSON.parse(localStorage.getItem('shopee_convert_history')) || [];
+            
+            // Định dạng thời gian Giờ:Phút Ngày-Tháng giống mẫu ảnh
+            const d = new Date();
+            const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+            const historyItem = {
+                url: shopeeUrl,
+                title: productName,
+                time: timeStr,
+                ytb: splitResult.ytbLink || "",
+                fb: splitResult.fbLink || "",
+                ig: splitResult.igLink || ""
+            };
+
+            // Nếu trùng link cũ thì xóa dòng cũ đi để đưa dòng mới lên đầu
+            currentHistory = currentHistory.filter(item => item.url !== shopeeUrl);
+            currentHistory.unshift(historyItem);
+
+            // Giới hạn tối đa lưu 15 mục gần nhất cho nhẹ trình duyệt
+            if(currentHistory.length > 15) currentHistory.pop();
+
+            localStorage.setItem('shopee_convert_history', JSON.stringify(currentHistory));
+        } catch (err) { console.error("Lỗi lưu lịch sử:", err); }
+    }
+
+    function renderHistoryList() {
+        const targetContainer = document.getElementById('historyContainerTarget');
+        const dataHistory = JSON.parse(localStorage.getItem('shopee_convert_history')) || [];
+
+        if (dataHistory.length === 0) {
+            targetContainer.innerHTML = '<p style="text-align:center; color:#64748b; font-size:13px; padding:30px 10px;">Chưa có lịch sử chuyển đổi liên kết nào.</p>';
+            return;
+        }
+
+        let fullHTML = '';
+        dataHistory.forEach(item => {
+            let rowLinksHTML = '';
+
+            // Render 3 hàng link con chuẩn theo mockup của bạn
+            const platforms = [
+                { name: '▶ YTB', class: 'badge-ytb-mini', link: item.ytb },
+                { name: 'f FB', class: 'badge-fb-mini', link: item.fb },
+                { name: '📷 IG', class: 'badge-ig-mini', link: item.ig }
+            ];
+
+            platforms.forEach(p => {
+                if(!p.link || p.link.trim() === "") return;
+                rowLinksHTML += `
+                    <div class="hist-link-row">
+                        <span class="hist-badge ${p.class}">${p.name}</span>
+                        <span class="hist-link-url">${p.link}</span>
+                        <div class="hist-actions">
+                            <button class="btn-mini-action" onclick="copyTextDirect('${p.link}')">Sao chép</button>
+                            <a class="btn-mini-action btn-mini-go" href="${p.link}">Đi tới</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            fullHTML += `
+                <div class="hist-item-box">
+                    <div class="hist-prod-info">
+                        <div class="hist-img-placeholder">📦</div>
+                        <div>
+                            <div class="hist-title-txt">${item.title}</div>
+                            <div class="hist-url-txt">${item.url}</div>
+                            <div class="hist-time-txt">⏱ ${item.time}</div>
+                        </div>
+                    </div>
+                    ${rowLinksHTML}
+                </div>
+            `;
+        });
+
+        targetContainer.innerHTML = fullHTML;
+    }
+
+    function copyTextDirect(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Đã sao chép liên kết thành công!");
+        }).catch(() => alert("Trình duyệt không hỗ trợ sao chép tự động."));
+    }
+
+    function clearAllHistory() {
+        if(confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử chuyển đổi liên kết?")) {
+            localStorage.removeItem('shopee_convert_history');
+            renderHistoryList();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', fetchLiveVouchers);
