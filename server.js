@@ -36,7 +36,7 @@ const productNameCache = {};
 
 // ==================== KHÔNG GIAN BẢO MẬT ADMIN ====================
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "vlu123456"; // Hãy đổi mật khẩu này khi lên môi trường chạy thật hoặc qua biến môi trường Railway
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "17042005"; // Hãy đổi mật khẩu này khi lên môi trường chạy thật hoặc qua biến môi trường Railway
 const ADMIN_TOKEN = "VLU_SECRET_SESSION_TOKEN_2026"; // Token xác thực phiên đăng nhập tạm thời
 
 // Middleware kiểm tra quyền truy cập hợp lệ trước khi trả dữ liệu nhạy cảm
