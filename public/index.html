@@ -64,7 +64,7 @@
         .history-box { background: #161c26; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #232d3d; }
         .history-title { font-size: 13px; color: #8fa0b5; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; }
 
-        /* ==================== STYLE HỆ THỐNG TAB & LỊCH SỬ MỚI ==================== */
+        /* TAB & LỊCH SỬ STYLES */
         .tab-wrapper { display: flex; background: #111827; border: 1px solid #1f2937; padding: 4px; border-radius: 8px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 12px; text-align: center; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14.5px; border: none; background: transparent; color: #9ca3af; transition: 0.2s; }
         .tab-btn.active { background: #1f2937; color: #fb923c; border: 1px solid #374151; }
@@ -93,8 +93,8 @@
         .hist-actions { display: flex; gap: 6px; }
         .btn-mini-action { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; text-decoration: none; }
         .btn-mini-action:hover { background: #334155; color: #fff; }
-        .btn-mini-go { background: #064e3b; color: #34d399; border-color: #047857; }
-        .btn-mini-go:hover { background: #047857; color: #fff; }
+        .btn-mini-go { background: #b45309; color: #fed7aa; border-color: #d97706; }
+        .btn-mini-go:hover { background: #d97706; color: #fff; }
     </style>
 </head>
 <body>
@@ -104,7 +104,7 @@
 
     <!-- THANH CHUYỂN ĐỔI TAB (ĐƠN LẺ / LỊCH SỬ) -->
     <div class="tab-wrapper">
-        <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Đơn lẻ</button>
+        <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Don lẻ</button>
         <button class="tab-btn" id="tab-history" onclick="switchTab('history')">Lịch sử</button>
     </div>
 
@@ -158,12 +158,15 @@
 
     <!-- PHẦN THÔNG TIN VÀ LIVE VOUCHERS DÙNG CHUNG PHÍA DƯỚI -->
     <div id="static-info">
+        <!-- ĐÃ CẬP NHẬT PHẦN HƯỚNG DẪN RIÊNG BIỆT CHO TAB LỊCH SỬ CHUẨN XÁC -->
         <div class="guide-box">
             <div class="guide-title"><i>i</i> Hướng dẫn</div>
             <div class="guide-text">
-                <strong>Bước 1:</strong> Tìm mã ưu đãi phù hợp nhất với túi tiền của bạn ở cụm nút xanh. App Shopee sẽ mở lên, bạn chờ 3s cho mã lưu vào ví, sau đó quay lại trang web này.<br>
-                <span class="warning-text">(Lưu ý: Bước 1 chỉ để lưu mã độc quyền. TUYỆT ĐỐI KHÔNG ĐƯỢC "MUA HÀNG" ở bước này để tránh bị Shopee quét huỷ đơn, lỗi đơn,...).</span>
-                <strong>Bước 2:</strong> Bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong>. Chọn Mua với mã giảm giá, chọn phân loại hàng và bấm mua ngay, chọn Shopee Voucher và áp mã giảm giá vào, sau đó bấm nút đặt hàng.
+                <strong>Giao diện Đơn lẻ:</strong><br>
+                • <strong>Bước 1:</strong> Chọn luồng mã phù hợp để app Shopee mở lưu voucher. <span class="warning-text">(Lưu ý: Chỉ lưu mã, tuyệt đối không đặt mua ngay tại bước này).</span>
+                • <strong>Bước 2:</strong> Quay lại trang web bấm nút cam <strong>"BẤM MUA & ÁP MÃ"</strong> dưới cùng để tiến hành đặt đơn và áp voucher.<br><br>
+                <strong>Giao diện Lịch sử:</strong><br>
+                • Nếu tài khoản đã lưu voucher từ trước, bạn có thể bấm thẳng nút <strong>"Đi tới mua"</strong> ở bất kỳ luồng nào để chuyển hướng mua hàng và áp mã luôn. Trường hợp voucher hết hạn hoặc muốn làm mới quy trình lấy mã, hãy quay lại tab <strong>"Đơn lẻ"</strong> thực hiện từ đầu.
             </div>
         </div>
 
@@ -188,7 +191,6 @@
     let liveVouchersCache = [];
     const typingDelay = 400; 
 
-    // Hàm chuyển đổi qua lại giữa các tab
     function switchTab(tabName) {
         document.getElementById('tab-single').classList.remove('active');
         document.getElementById('tab-history').classList.remove('active');
@@ -298,9 +300,7 @@
         ctx.stroke();
 
         ctx.fillStyle = color; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
-        
         const labelInterval = Math.ceil(points.length / 6);
-
         points.forEach((p, idx) => {
             ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI); ctx.fill();
             if (idx % labelInterval === 0 || idx === points.length - 1) {
@@ -380,7 +380,7 @@
                 buildStep1DynamicButtons(splitResponse);
                 workflow.style.display = 'block';
 
-                // TỰ ĐỘNG GHI DỮ LIỆU LỊCH SỬ KHI BIẾN ĐỔI LINK THÀNH CÔNG
+                // LƯU TRỮ LỊCH SỬ KÈM LINK BƯỚC 2 ĐỂ KHÁCH BẤM MUA LUÔN Ở TAB LỊCH SỬ
                 saveToHistoryLocalStorage(url, pName, splitResponse);
             } else {
                 alert(splitResponse.message || 'Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
@@ -431,24 +431,22 @@
         try {
             let currentHistory = JSON.parse(localStorage.getItem('shopee_convert_history')) || [];
             
-            // Định dạng thời gian Giờ:Phút Ngày-Tháng giống mẫu ảnh
             const d = new Date();
             const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 
+            // Gán link thô Bước 2 (splitResult.step2) cho cả 3 nền tảng trong lịch sử để khách mua luôn
             const historyItem = {
                 url: shopeeUrl,
                 title: productName,
                 time: timeStr,
-                ytb: splitResult.ytbLink || "",
-                fb: splitResult.fbLink || "",
-                ig: splitResult.igLink || ""
+                ytb: splitResult.step2 || "",
+                fb: splitResult.step2 || "",
+                ig: splitResult.step2 || ""
             };
 
-            // Nếu trùng link cũ thì xóa dòng cũ đi để đưa dòng mới lên đầu
             currentHistory = currentHistory.filter(item => item.url !== shopeeUrl);
             currentHistory.unshift(historyItem);
 
-            // Giới hạn tối đa lưu 15 mục gần nhất cho nhẹ trình duyệt
             if(currentHistory.length > 15) currentHistory.pop();
 
             localStorage.setItem('shopee_convert_history', JSON.stringify(currentHistory));
@@ -468,7 +466,6 @@
         dataHistory.forEach(item => {
             let rowLinksHTML = '';
 
-            // Render 3 hàng link con chuẩn theo mockup của bạn
             const platforms = [
                 { name: '▶ YTB', class: 'badge-ytb-mini', link: item.ytb },
                 { name: 'f FB', class: 'badge-fb-mini', link: item.fb },
@@ -480,10 +477,10 @@
                 rowLinksHTML += `
                     <div class="hist-link-row">
                         <span class="hist-badge ${p.class}">${p.name}</span>
-                        <span class="hist-link-url">${p.link}</span>
+                        <span class="hist-link-url" style="color: #fb923c;">[Link Mua & Áp Mã]</span>
                         <div class="hist-actions">
                             <button class="btn-mini-action" onclick="copyTextDirect('${p.link}')">Sao chép</button>
-                            <a class="btn-mini-action btn-mini-go" href="${p.link}">Đi tới</a>
+                            <a class="btn-mini-action btn-mini-go" href="${p.link}">Đi tới mua</a>
                         </div>
                     </div>
                 `;
@@ -509,7 +506,7 @@
 
     function copyTextDirect(text) {
         navigator.clipboard.writeText(text).then(() => {
-            alert("Đã sao chép liên kết thành công!");
+            alert("Đã sao chép liên kết mua hàng!");
         }).catch(() => alert("Trình duyệt không hỗ trợ sao chép tự động."));
     }
 
