@@ -267,6 +267,22 @@ app.get('/api/admin/logs', requireAdminAuth, async (req, res) => {
     }
 });
 
+// ==================== ENDPOINT MỚI 3: XÓA TOÀN BỘ NHẬT KÝ HỆ THỐNG (CÓ BẢO MẬT) ====================
+app.delete('/api/admin/clear-logs', requireAdminAuth, async (req, res) => {
+    try {
+        // Xóa hoàn toàn tất cả các bản ghi log trong MongoDB
+        await AdminLog.deleteMany({});
+        
+        return res.json({
+            success: true,
+            message: "Đã xóa toàn bộ nhật ký hệ thống thành công!"
+        });
+    } catch (err) {
+        console.log("⚠️ Lỗi dọn dẹp dữ liệu Admin:", err.message);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Hệ thống phân luồng săn sale đang chạy tại cổng: ${PORT}`);
