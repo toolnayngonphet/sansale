@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Thống Kê Admin</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background-color: #070b12; color: #fff; }
+        .container { background: #0f1622; padding: 30px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); border: 1px solid #1e293b; }
+        h2 { color: #ee4d2d; text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #64748b; font-size: 13.5px; margin-bottom: 25px; }
+        
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #131c2a; border: 1px solid #223147; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #8fa0b5; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card .value { font-size: 32px; font-weight: bold; color: #fb923c; }
+
+        h3.section-title { font-size: 16px; color: #cbd5e1; border-left: 4px solid #ee4d2d; padding-left: 8px; margin-top: 30px; margin-bottom: 15px; }
+        
+        .table-wrapper { width: 100%; overflow-x: auto; background: #101726; border: 1px solid #1e293b; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #162238; color: #8fa0b5; padding: 12px 15px; font-weight: bold; border-bottom: 1px solid #1e293b; }
+        td { padding: 12px 15px; border-bottom: 1px solid #1e293b; color: #cbd5e1; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        tr:hover td { background: #131c2a; }
+        
+        .link-text { color: #38bdf8; text-decoration: none; }
+        .link-text:hover { text-decoration: underline; }
+        .count-badge { background: #241416; color: #f87171; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        
+        .btn-refresh { background-color: #2d3d54; color: #fff; border: 1px solid #3b5271; padding: 8px 16px; border-radius: 6px; font-size: 13.5px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto 20px auto; transition: 0.2s; }
+        .btn-refresh:hover { background-color: #3b5271; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Bảng Điều Khiển Admin</h2>
+    <div class="subtitle">Dữ liệu thống kê tự động lưu trữ và tự xóa sau 7 ngày</div>
+
+    <button class="btn-refresh" onclick="loadAdminStats()">🔄 Làm mới dữ liệu</button>
+
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <h3>Tổng lượt tạo liên kết (7 ngày qua)</h3>
+            <div id="totalClicksValue" class="value">0</div>
+        </div>
+    </div>
+
+    <!-- KHỐI 1: TOP SẢN PHẨM -->
+    <h3 class="section-title">Top 10 Sản Phẩm Hot Nhất</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên Sản Phẩm</th>
+                    <th style="width: 120px; text-align: center;">Lượt Tạo Link</th>
+                </tr>
+            </thead>
+            <tbody id="topProductsTarget">
+                <tr><td colspan="2" style="text-align:center; color:#64748b;">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- KHỐI 2: LỊCH SỬ TIME-REAL -->
+    <h3 class="section-title">Lịch Sử Tạo Link Gần Đây</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 130px;">Thời Gian</th>
+                    <th>Tên Sản Phẩm</th>
+                    <th style="width: 120px;">Liên Kết Gốc</th>
+                </tr>
+            </thead>
+            <tbody id="recentLogsTarget">
+                <tr><td colspan="3" style="text-align:center; color:#64748b;">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function loadAdminStats() {
+        try {
+            const res = await fetch('/api/admin/stats');
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('totalClicksValue').innerText = data.totalClicks.toLocaleString('vi-VN');
+
+                const topTarget = document.getElementById('topProductsTarget');
+                if (!data.topProducts || data.topProducts.length === 0) {
+                    topTarget.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#64748b;">Chưa có dữ liệu sản phẩm.</td></tr>';
+                } else {
+                    topTarget.innerHTML = data.topProducts.map(item => `
+                        <tr>
+                            <td title="${item._id}">${item._id}</td>
+                            <td style="text-align: center;"><span class="count-badge">${item.count} lượt</span></td>
+                        </tr>
+                    `).join('');
+                }
+
+                const recentTarget = document.getElementById('recentLogsTarget');
+                if (!data.recentLogs || data.recentLogs.length === 0) {
+                    recentTarget.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#64748b;">Chưa có lịch sử tạo link.</td></tr>';
+                } else {
+                    recentTarget.innerHTML = data.recentLogs.map(item => {
+                        const date = new Date(item.createdAt);
+                        const timeStr = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} ${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        
+                        return `
+                            <tr>
+                                <td style="color:#8fa0b5; font-size:12.5px;">${timeStr}</td>
+                                <td title="${item.productName}">${item.productName}</td>
+                                <td><a class="link-text" href="${item.productUrl}" target="_blank">Xem Link</a></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } else {
+                alert("Không thể tải dữ liệu từ API Admin.");
+            }
+        } catch (err) {
+            console.error("Lỗi kết nối admin:", err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAdminStats);
+</script>
+</body>
+</html>
