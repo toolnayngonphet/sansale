@@ -104,7 +104,7 @@
 
     <!-- THANH CHUYỂN ĐỔI TAB (ĐƠN LẺ / LỊCH SỬ) -->
     <div class="tab-wrapper">
-        <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Don lẻ</button>
+        <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">Đơn lẻ</button>
         <button class="tab-btn" id="tab-history" onclick="switchTab('history')">Lịch sử</button>
     </div>
 
@@ -142,7 +142,7 @@
             <div class="step-box step-2" id="boxStep2" style="opacity: 0.4;">
                 <div class="step-num" style="color: #ee4d2d;">BƯỚC 2: ẤN ĐỂ MUA VÀ ÁP MÃ HỢP LỆ</div>
                 <div class="step-desc">Nhấp vào đây để chốt đơn hàng và áp cái mã bạn vừa chọn mở lưu ở Bước 1.</div>
-                <a id="btnStep2" class="btn-go btn-2" href="#" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
+                <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #9e9e9e;">2. BẤM MUA & ÁP MÃ</a>
             </div>
         </div>
     </div>
@@ -158,7 +158,6 @@
 
     <!-- PHẦN THÔNG TIN VÀ LIVE VOUCHERS DÙNG CHUNG PHÍA DƯỚI -->
     <div id="static-info">
-        <!-- ĐÃ CẬP NHẬT PHẦN HƯỚNG DẪN RIÊNG BIỆT CHO TAB LỊCH SỬ CHUẨN XÁC -->
         <div class="guide-box">
             <div class="guide-title"><i>i</i> Hướng dẫn</div>
             <div class="guide-text">
@@ -380,7 +379,7 @@
                 buildStep1DynamicButtons(splitResponse);
                 workflow.style.display = 'block';
 
-                // LƯU TRỮ LỊCH SỬ KÈM LINK BƯỚC 2 ĐỂ KHÁCH BẤM MUA LUÔN Ở TAB LỊCH SỬ
+                // LƯU LỊCH SỬ KÈM LINK BƯỚC 2 ĐỂ KHÁCH BẤM MUA LUÔN Ở TAB LỊCH SỬ
                 saveToHistoryLocalStorage(url, pName, splitResponse);
             } else {
                 alert(splitResponse.message || 'Xử lý phân định tuyến liên kết thất bại từ máy chủ.');
@@ -409,9 +408,10 @@
                 ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
                 : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
 
+            // THÊM LẠI target="_blank" CHO CỤM NÚT ĐỘNG
             const nodeHTML = `
                 <div class="voucher-node-card">
-                    <a class="btn-go ${p.btnClass}" href="${p.link}" onclick="markStep1Done()">1. MỞ LINK LƯU: ${p.label}</a>
+                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()">1. MỞ LINK LƯU: ${p.label}</a>
                     <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">🔥 ${voucherDetailText}</div>
                 </div>
             `;
@@ -474,13 +474,14 @@
 
             platforms.forEach(p => {
                 if(!p.link || p.link.trim() === "") return;
+                // THÊM LẠI target="_blank" CHO DANH SÁCH LỊCH SỬ
                 rowLinksHTML += `
                     <div class="hist-link-row">
                         <span class="hist-badge ${p.class}">${p.name}</span>
                         <span class="hist-link-url" style="color: #fb923c;">[Link Mua & Áp Mã]</span>
                         <div class="hist-actions">
                             <button class="btn-mini-action" onclick="copyTextDirect('${p.link}')">Sao chép</button>
-                            <a class="btn-mini-action btn-mini-go" href="${p.link}">Đi tới mua</a>
+                            <a class="btn-mini-action btn-mini-go" href="${p.link}" target="_blank">Đi tới mua</a>
                         </div>
                     </div>
                 `;
