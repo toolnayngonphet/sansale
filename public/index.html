@@ -63,7 +63,7 @@
         .stat-label { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
         .stat-divider { width: 1px; height: 20px; background: #cbd5e1; }
 
-        /* Cảnh Báo Khẩn Cấp Urgency Banner */
+        /* Cảnh Báo Flash Sale */
         .urgency-banner {
             display: flex; align-items: center; gap: 8px; background: rgba(238,77,45,0.06);
             border: 1px solid rgba(238,77,45,0.12); padding: 10px 14px; border-radius: 10px;
@@ -223,7 +223,7 @@
             </div>
 
             <div class="input-group">
-                <input type="text" id="shopeeUrl" placeholder="Dán link sản phẩm Shopee vào đây..." oninput="triggerAutoRun()">
+                <input type="text" id="shopeeUrl" placeholder="Dán liên kết Shopee s.shopee.vn hoặc shopee.vn vào đây..." oninput="triggerAutoRun()">
                 <button type="button" class="btn-paste" onclick="pasteFromClipboard()">Dán</button>
             </div>
             
@@ -231,6 +231,9 @@
                 <span id="btnText">TẠO LINK NGAY</span>
             </button>
             
+            <!-- KHÔI PHỤC DÒNG CODE TRẠNG THÁI TẢI DỮ LIỆU BỊ THIẾU TẠI ĐÂY -->
+            <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
+
             <!-- THÔNG TIN SẢN PHẨM SĂN SALE -->
             <div id="productInfoCard" class="product-card">
                 <div id="cardTitle" class="prod-title">Đang nạp tên mặt hàng...</div>
@@ -277,7 +280,7 @@
         <div class="trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Miễn phí</div>
     </div>
 
-    <!-- KHỐI HƯỚNG DẪN MẪU SHORT.SHPEE (ĐÃ LỌC SẠCH KÝ TỰ HỆ THỐNG) -->
+    <!-- KHỐI HƯỚNG DẪN MẪU SHORT.SHPEE -->
     <section class="panel">
         <div class="panel-header">
             <div class="panel-icon">
