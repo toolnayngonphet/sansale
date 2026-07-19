@@ -102,7 +102,6 @@
         .btn-submit:hover { background-color: var(--primary-hover); }
         .btn-submit:disabled { background-color: #e2e8f0 !important; color: #94a3b8; cursor: not-allowed; animation: blink 1.5s infinite ease-in-out; box-shadow: none; }
         
-        .loading-status { display: none; text-align: center; color: var(--primary); font-weight: bold; margin: 15px 0; font-size: 14px; animation: blink 1.5s infinite ease-in-out; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* Card Thông Tin Sản Phẩm */
@@ -116,21 +115,20 @@
         .section-headline { font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
         .section-headline::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
         
-        .step1-nodes-container { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; width: 100%; }
-        .voucher-node-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; text-align: left; }
+        /* ĐƯA CÁC NÚT BƯỚC 1 LÊN CÙNG MỘT HÀNG NGANG FLEXBOX */
+        .step1-nodes-container { display: flex; flex-direction: row; gap: 10px; margin-top: 10px; width: 100%; justify-content: space-between; }
+        .voucher-node-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; text-align: left; flex: 1; min-width: 0; }
         
-        .btn-go { display: inline-block; padding: 12px; color: white; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .btn-go { display: inline-block; padding: 12px; color: white; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 13.5px; width: 100%; box-sizing: border-box; text-align: center; display: flex; justify-content: center; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .btn-fb { background: linear-gradient(135deg, #1877f2, #0d62d6); }
         .btn-ytb { background: linear-gradient(135deg, #ff0000, #cc0000); }
-        .btn-ig { background: linear-gradient(135deg, #c13584, #833ab4); }
         
-        /* Cụm Nút Mở App Bước 2 */
+        /* Cụm Nút Điều Hướng Bước 2 Luôn Sáng */
         .v3-action-wrapper { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-        .btn-2 { background-color: var(--primary); width: 100%; padding: 13px 10px; font-size: 14.5px; box-shadow: 0 2px 4px rgba(238, 77, 45, 0.2); }
+        .btn-2 { background-color: var(--primary); width: 100%; padding: 13px 10px; font-size: 14.5px; box-shadow: 0 2px 4px rgba(238, 77, 45, 0.2); text-align: center; color: #fff; text-decoration: none; font-weight: bold; border-radius: 8px; display: block; box-sizing: border-box; transition: 0.2s; }
         .btn-2:hover { background-color: var(--primary-hover); }
         .step-badge-mini { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; margin-right: 4px; flex-shrink: 0; color: #fff; }
         .v3-hint { font-size: 12.5px; color: #b45309; line-height: 1.4; padding: 8px 10px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; text-align: center; }
-        .v3-hint em { color: #d97706; font-style: normal; font-weight: bold; }
 
         /* Tabs Điều Hướng Sáng */
         .tab-wrapper { display: flex; background: #e2e8f0; padding: 4px; border-radius: 10px; margin-bottom: 25px; }
@@ -153,7 +151,6 @@
         .hist-badge { font-weight: bold; font-size: 10.5px; padding: 2px 6px; border-radius: 4px; min-width: 35px; text-align: center; }
         .badge-fb-mini { background: #e0f2fe; color: #0284c7; }
         .badge-ytb-mini { background: #fee2e2; color: #dc2626; }
-        .badge-ig-mini { background: #fce7f3; color: #db2777; }
         
         .hist-actions { display: flex; gap: 8px; }
         .btn-mini-action { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; text-decoration: none; }
@@ -230,9 +227,6 @@
             <button id="btnManualSubmit" class="btn-submit" onclick="generateWorkflow(true)">
                 <span id="btnText">TẠO LINK NGAY</span>
             </button>
-            
-            <!-- KHÔI PHỤC DÒNG CODE TRẠNG THÁI TẢI DỮ LIỆU BỊ THIẾU TẠI ĐÂY -->
-            <div id="loadingStatus" class="loading-status">🔄 Đang tạo link voucher độc quyền...</div>
 
             <!-- THÔNG TIN SẢN PHẨM SĂN SALE -->
             <div id="productInfoCard" class="product-card">
@@ -247,15 +241,17 @@
             <!-- KHỐI CHỨA HIỂN THỊ KẾT QUẢ ĐỘNG (BƯỚC 1 & BƯỚC 2) -->
             <div id="workflow" class="convert-result">
                 <div class="section-headline">Bước 1: Ấn chọn luồng phù hợp để lưu (Tuyệt đối không mua hàng)</div>
+                <!-- 2 nút FB và YT sẽ nằm chung trên 1 hàng ngang tại đây -->
                 <div class="step1-nodes-container" id="step1ButtonsZone"></div>
 
                 <div class="section-headline">Bước 2: Ấn để mua và áp mã hợp lệ</div>
-                <div id="boxStep2" class="v3-action-wrapper" style="opacity: 0.4;">
+                <div id="boxStep2" class="v3-action-wrapper">
                     <div class="v3-btn-row">
-                        <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #cbd5e1; color: #94a3b8;">Mua hàng</a>
+                        <!-- Bước 2 luôn sáng sẵn, sẵn sàng click kích hoạt điều hướng -->
+                        <a id="btnStep2" class="btn-2" href="#" target="_blank">Mua hàng</a>[cite: 1]
                     </div>
                     <div class="v3-hint">
-                        <strong>Bấm <em>B1 &rarr; Lưu voucher</em> trước &rarr; chờ 3s &rarr; quay lại bấm <em>B2 &rarr; Mua hàng</em> để nhận mã rẻ hơn</strong>
+                        <strong>Bấm <em>B1 &rarr; Lưu voucher</em> trước &rarr; chờ 3s &rarr; quay lại bấm <em>B2 &rarr; Mua hàng</em> để nhận mã rẻ hơn</strong>[cite: 1]
                     </div>
                 </div>
             </div>
@@ -289,9 +285,9 @@
             <p class="panel-title">Hướng dẫn</p>
         </div>
         <ol class="guide-steps">
-            <li>B1: Sau khi tạo link, nhấn <strong>Lưu voucher</strong> sẽ chuyển sang app Shopee.</li>
-            <li>B2: Chờ 3s &rarr; quay lại bấm <strong>Mua hàng</strong> để nhận mã rẻ hơn</li>
-            <li>Lưu ý: Làm đủ 2 bước để nhận mã, nếu không sẽ không nhận được mã.</li>
+            <li>B1: Sau khi tạo link, nhấn <strong>Lưu voucher</strong> sẽ chuyển sang app Shopee.[cite: 1]</li>
+            <li>B2: Chờ 3s &rarr; quay lại bấm <strong>Mua hàng</strong> để nhận mã rẻ hơn[cite: 1]</li>
+            <li>Lưu ý: Làm đủ 2 bước để nhận mã, nếu không sẽ không nhận được mã.[cite: 1]</li>
         </ol>
     </section>
 
@@ -400,19 +396,13 @@
 
         const btnManualSubmit = document.getElementById('btnManualSubmit');
         const btnText = document.getElementById('btnText');
-        const loadingStatus = document.getElementById('loadingStatus');
         const productCard = document.getElementById('productInfoCard');
         const workflow = document.getElementById('workflow');
-        const box2 = document.getElementById('boxStep2');
-        const btn2 = document.getElementById('btnStep2');
         
-        loadingStatus.style.display = 'block';
         btnText.innerText = 'ĐANG XỬ LÝ...';
         btnManualSubmit.disabled = true;
         productCard.style.display = 'none';
         workflow.style.display = 'none';
-        box2.setAttribute('style', 'opacity: 0.4;');
-        btn2.setAttribute('style', 'pointer-events: none; background-color: #cbd5e1; color: #94a3b8;');
 
         try {
             const [infoResponse, splitResponse] = await Promise.all([
@@ -450,32 +440,46 @@
         } catch (err) {
             console.error(err); alert('Lỗi kết nối Server: ' + err.message);
         } finally {
-            loadingStatus.style.display = 'none'; btnText.innerText = 'TẠO LINK NGAY'; btnManualSubmit.disabled = false;
+            btnText.innerText = 'TẠO LINK NGAY'; btnManualSubmit.disabled = false;
         }
     }
 
+    // BIẾN THỂ RENDER 2 NÚT NẰM CÙNG MỘT HÀNG NGANG (ẨN YT NẾU BACKEND KHÔNG CÓ LINK)
     function buildStep1DynamicButtons(linksData) {
         const zone = document.getElementById('step1ButtonsZone');
         zone.innerHTML = '';
 
-        const platformsConfig = [
-            { key: 'fbLink', label: 'MÃ FACEBOOK (FB)', btnClass: 'btn-fb', link: linksData.fbLink, filter: (v) => v.voucher_code.toUpperCase().includes('META') || v.voucher_code.toUpperCase().includes('PAR') },
-            { key: 'ytbLink', label: 'MÃ YOUTUBE (YTB)', btnClass: 'btn-ytb', link: linksData.ytbLink, filter: (v) => v.voucher_code.toUpperCase().includes('YOUTUBE') || v.voucher_code.toUpperCase().includes('YT') },
-            { key: 'igLink', label: 'MÃ INSTAGRAM (IG)', btnClass: 'btn-ig', link: linksData.igLink, filter: (v) => v.voucher_code.toUpperCase().includes('IG') || v.voucher_code.toUpperCase().includes('INSTA') }
-        ];
+        const platformsConfig = [];
+        
+        // Luồng Facebook mặc định luôn hiển thị
+        if (linksData.fbLink && linksData.fbLink.trim() !== "") {
+            platformsConfig.push({
+                key: 'fbLink', label: 'FACEBOOK', btnClass: 'btn-fb', link: linksData.fbLink,
+                filter: (v) => v.voucher_code.toUpperCase().includes('META') || v.voucher_code.toUpperCase().includes('PAR')
+            });
+        }
 
+        // Luồng YouTube Shopping (Tự động ẩn dựa trên phản hồi chiến dịch từ Backend)
+        if (linksData.ytbLink && linksData.ytbLink.trim() !== "") {
+            platformsConfig.push({
+                key: 'ytbLink', label: 'YOUTUBE', btnClass: 'btn-ytb', link: linksData.ytbLink,
+                filter: (v) => v.voucher_code.toUpperCase().includes('YOUTUBE') || v.voucher_code.toUpperCase().includes('YT')
+            });
+        }
+
+        // Tạo cấu trúc phân luồng chung 1 dòng Flexbox
         platformsConfig.forEach(p => {
-            if (!p.link || p.link.trim() === "") return;
-            
             const matched = liveVouchersCache.filter(p.filter).filter(v => v.status !== 'expired' && v.usage_progress < 100);
             const voucherDetailText = matched.length > 0 
-                ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
-                : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
+                ? `🔥 <strong>${matched[0].voucher_code}</strong> (${matched[0].usage_progress}%)` 
+                : `Mã đặc quyền ${p.label}`;
 
             const nodeHTML = `
                 <div class="voucher-node-card">
-                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()"><span class="step-badge-mini">B1</span>Lưu voucher: ${p.label.split(' ')[1]}</a>
-                    <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">🔥 ${voucherDetailText}</div>
+                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank">
+                        <span class="step-badge-mini">B1</span>Lưu: ${p.label}
+                    </a>
+                    <div style="font-size: 11px; color: #475569; margin-top: 6px; line-height: 1.3; text-align:center;">${voucherDetailText}</div>
                 </div>
             `;
             zone.insertAdjacentHTML('beforeend', nodeHTML);
@@ -489,17 +493,6 @@
         }
     }
 
-    function markStep1Done() {
-        setTimeout(() => {
-            const box2 = document.getElementById('boxStep2'); const btn2 = document.getElementById('btnStep2');
-            box2.setAttribute('style', 'opacity: 1;'); 
-            btn2.removeAttribute('style');
-            btn2.setAttribute('class', 'btn-go btn-2');
-            btn2.style.backgroundColor = "var(--primary)";
-            btn2.style.color = "#fff";
-        }, 1000);
-    }
-
     function saveToHistoryLocalStorage(shopeeUrl, productName, splitResult) {
         try {
             let currentHistory = JSON.parse(localStorage.getItem('shopee_convert_history')) || [];
@@ -511,8 +504,7 @@
                 title: productName,
                 time: timeStr,
                 ytb: splitResult.ytbLink ? splitResult.step2 : "", 
-                fb: splitResult.fbLink ? splitResult.step2 : "",
-                ig: splitResult.igLink ? splitResult.step2 : ""
+                fb: splitResult.fbLink ? splitResult.step2 : ""
             };
 
             currentHistory = currentHistory.filter(item => item.url !== shopeeUrl);
@@ -538,8 +530,7 @@
 
             const platforms = [
                 { name: '▶ YTB Shopping', class: 'badge-ytb-mini', link: item.ytb },
-                { name: 'f FB Commerce', class: 'badge-fb-mini', link: item.fb },
-                { name: '📷 IG Bio Link', class: 'badge-ig-mini', link: item.ig }
+                { name: 'f FB Commerce', class: 'badge-fb-mini', link: item.fb }
             ];
 
             platforms.forEach(p => {
