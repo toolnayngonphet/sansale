@@ -34,6 +34,30 @@ const MY_AFFILIATE_ID = "17344490003";
 const resolvedLinksCache = {};
 const productNameCache = {};
 
+// ==================== KHÔNG GIAN BẢO MẬT ADMIN ====================
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "vlu123456"; // Hãy đổi mật khẩu này khi lên môi trường chạy thật hoặc qua biến môi trường Railway
+const ADMIN_TOKEN = "VLU_SECRET_SESSION_TOKEN_2026"; // Token xác thực phiên đăng nhập tạm thời
+
+// Middleware kiểm tra quyền truy cập hợp lệ trước khi trả dữ liệu nhạy cảm
+const requireAdminAuth = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (authHeader === `Bearer ${ADMIN_TOKEN}`) {
+        next();
+    } else {
+        res.status(401).json({ success: false, message: "Yêu cầu đăng nhập quản trị viên!" });
+    }
+};
+
+// API: Xử lý đăng nhập hệ thống Admin
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        return res.json({ success: true, token: ADMIN_TOKEN });
+    }
+    return res.json({ success: false, message: "Sai tài khoản hoặc mật khẩu!" });
+});
+
 // ==================== ENDPOINT: BỐC VOUCHER ĐỘNG TỪ SALESOC ====================
 app.get('/api/vouchers', async (req, res) => {
     try {
@@ -193,16 +217,10 @@ app.post('/api/split-link', async (req, res) => {
     }
 });
 
-// ==================== ENDPOINT MỚI: TRẢ VỀ SỐ LIỆU THỐNG KÊ CHO ADMIN ====================
-app.get('/api/admin/stats', async (req, res) => {
+// ==================== ENDPOINT MỚI 1: TRẢ VỀ SỐ LIỆU TỔNG QUAN ADMIN (CÓ BẢO MẬT) ====================
+app.get('/api/admin/overview', requireAdminAuth, async (req, res) => {
     try {
-        // 1. Tổng số lượt tạo liên kết đang lưu hành trong DB (chỉ chứa dữ liệu trong 7 ngày)
         const totalClicks = await AdminLog.countDocuments();
-
-        // 2. Danh sách 50 lượt tạo liên kết gần đây nhất
-        const recentLogs = await AdminLog.find().sort({ createdAt: -1 }).limit(50);
-        
-        // 3. Phân nhóm tìm ra top 10 sản phẩm được tạo link săn sale nhiều nhất
         const topProducts = await AdminLog.aggregate([
             { $group: { _id: "$productName", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
@@ -212,11 +230,39 @@ app.get('/api/admin/stats', async (req, res) => {
         return res.json({
             success: true,
             totalClicks,
-            recentLogs,
             topProducts
         });
     } catch (err) {
-        console.log("⚠️ Lỗi truy xuất số liệu Admin:", err.message);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ==================== ENDPOINT MỚI 2: NHẬT KÝ CHI TIẾT CÓ XỬ LÝ PHÂN TRANG (CÓ BẢO MẬT) ====================
+app.get('/api/admin/logs', requireAdminAuth, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10; // Cố định hiển thị 10 dòng trên một trang
+        const skip = (page - 1) * limit;
+
+        const totalLogs = await AdminLog.countDocuments();
+        const logs = await AdminLog.find()
+                                   .sort({ createdAt: -1 })
+                                   .skip(skip)
+                                   .limit(limit);
+
+        const totalPages = Math.ceil(totalLogs / limit);
+
+        return res.json({
+            success: true,
+            logs,
+            pagination: {
+                currentPage: page,
+                totalPages: totalPages,
+                totalLogs: totalLogs,
+                limit: limit
+            }
+        });
+    } catch (err) {
         return res.status(500).json({ success: false, message: err.message });
     }
 });
