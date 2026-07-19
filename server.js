@@ -154,11 +154,16 @@ app.post('/api/split-link', async (req, res) => {
                     productUrl: url.trim()
                 }).catch(dbErr => console.log("⚠️ Lỗi ghi nhận log MongoDB:", dbErr.message));
 
+                // KIỂM TRA ĐIỀU KIỆN YOUTUBE SHOPPING ĐỂ XỬ LÝ ẨN/HIỆN NÚT
+                const hasYoutube = data.hasYoutubeVoucher !== false;
+
                 // TRẢ VỀ ĐẦY ĐỦ CÁC LUỒNG ĐỂ FRONTEND RENDERING ĐỘNG BƯỚC 1 VÀ BƯỚC 2
                 return res.json({
                     success: true,
-                    fbLink: data.affipadShortUrl || "",
-                    ytbLink: data.affiliateUrl || "",
+                    // Nếu không có YTB, tự động lấy trường dự phòng shortFacebookAffiliateUrl hoặc shortAffiliateUrl
+                    fbLink: data.affipadShortUrl || data.shortFacebookAffiliateUrl || data.shortAffiliateUrl || "",
+                    // Nếu không có YTB, trả chuỗi trống để Frontend tự động ẩn nút đi hoàn toàn
+                    ytbLink: hasYoutube ? (data.affiliateUrl || "") : "",
                     igLink: data.shortInstagramAffiliateUrl || data.instagramAffiliateUrl || "",
                     step2: step2AffiliateLink
                 });
