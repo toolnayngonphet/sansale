@@ -251,10 +251,10 @@
                 <div class="section-headline">Bước 2: Ấn để mua và áp mã hợp lệ</div>
                 <div id="boxStep2" class="v3-action-wrapper" style="opacity: 0.4;">
                     <div class="v3-btn-row">
-                        <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #cbd5e1; color: #94a3b8;">Mua hàng</a>[cite: 1]
+                        <a id="btnStep2" class="btn-go btn-2" href="#" target="_blank" style="pointer-events: none; background-color: #cbd5e1; color: #94a3b8;">Mua hàng</a>
                     </div>
                     <div class="v3-hint">
-                        <strong>Bấm <em>B1 &rarr; Lưu voucher</em> trước &rarr; chờ 3s &rarr; quay lại bấm <em>B2 &rarr; Mua hàng</em> để nhận mã rẻ hơn</strong>[cite: 1]
+                        <strong>Bấm <em>B1 &rarr; Lưu voucher</em> trước &rarr; chờ 3s &rarr; quay lại bấm <em>B2 &rarr; Mua hàng</em> để nhận mã rẻ hơn</strong>
                     </div>
                 </div>
             </div>
@@ -279,7 +279,7 @@
         <div class="trust-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Miễn phí</div>
     </div>
 
-    <!-- KHỐI HƯỚNG DẪN CỦA SHORT.SHPEE -->
+    <!-- KHỐI HƯỚNG DẪN MẪU SHORT.SHPEE (ĐÃ LỌC SẠCH KÝ TỰ HỆ THỐNG) -->
     <section class="panel">
         <div class="panel-header">
             <div class="panel-icon">
@@ -288,15 +288,15 @@
             <p class="panel-title">Hướng dẫn</p>
         </div>
         <ol class="guide-steps">
-            <li>B1: Sau khi tạo link, nhấn <strong>Lưu voucher</strong>.[cite: 1]</li>
-            <li>B2: Chờ 3s &rarr; quay lại bấm <strong>Mua hàng</strong> để nhận mã rẻ hơn[cite: 1]</li>
-            <li>Lưu ý: Làm đủ 2 bước để nhận mã, nếu không sẽ không nhận được mã.[cite: 1]</li>
+            <li>B1: Sau khi tạo link, nhấn <strong>Lưu voucher</strong>.</li>
+            <li>B2: Chờ 3s &rarr; quay lại bấm <strong>Mua hàng</strong> để nhận mã rẻ hơn</li>
+            <li>Lưu ý: Làm đủ 2 bước để nhận mã, nếu không sẽ không nhận được mã.</li>
         </ol>
     </section>
 
     <!-- LIVE VOUCHERS DỮ LIỆU ĐỘNG -->
     <section class="panel">
-        <h3 style="margin: 0 0 15px 0; font-size: 15px; color: #1e293b; border-left: 4px solid var(--primary); padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
+        <h3 style="margin: 0 0 15px 0; font-size: 15px; color: #1e293b; border-left: 4px solid #ee4d2d; padding-left: 8px;">Dữ Liệu Mã Giảm Giá Trực Tiếp</h3>
         <div id="voucher-container">
             <p style="font-size: 13px; color: var(--text-sub); text-align: center; padding: 10px;">Đang tải danh sách dữ liệu mã giảm giá...</p>
         </div>
@@ -471,10 +471,9 @@
                 ? `<strong style="color:#ee4d2d;">${matched[0].voucher_code}</strong> &rarr; ${matched[0].description} (Đang dùng ${matched[0].usage_progress}%)` 
                 : `Mã giảm giá đặc quyền riêng của luồng ưu đãi ${p.label.split(' ')[1]}`;
 
-            // Đổi chữ "1. MỞ LINK LƯU:" thành "Lưu voucher:" để đồng bộ với hướng dẫn
             const nodeHTML = `
                 <div class="voucher-node-card">
-                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()"><span class="step-badge-mini">B1</span>Lưu voucher: ${p.label.split(' ')[1]}</a>[cite: 1]
+                    <a class="btn-go ${p.btnClass}" href="${p.link}" target="_blank" onclick="markStep1Done()"><span class="step-badge-mini">B1</span>Lưu voucher: ${p.label.split(' ')[1]}</a>
                     <div style="font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; padding: 0 2px;">🔥 ${voucherDetailText}</div>
                 </div>
             `;
