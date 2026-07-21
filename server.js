@@ -1,80 +1,36 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
-const cors = require('cors'); // Bổ sung để hỗ trợ Frontend gọi API mượt mà không lo bị chặn
-const mongoose = require('mongoose'); // Tích hợp Mongoose để kết nối Database trên Railway
+const cors = require('cors');
+
 const app = express();
 
-app.use(cors()); // Kích hoạt CORS cho phép mọi nguồn kết nối đến API này
+app.use(cors()); 
 app.use(express.json());
 // Phục vụ giao diện frontend nằm trong thư mục public
 app.use(express.static(path.join(__dirname, 'public')));
-
-// KẾT NỐI DATABASE RAILWAY (Tự động ưu tiên lấy biến môi trường do Railway cấp)
-const mongoURI = process.env.MONGODB_URL || process.env.MONGO_URL || "mongodb://127.0.0.1:27017/shopee_stats";
-mongoose.connect(mongoURI)
-  .then(() => console.log("✅ Đã kết nối MongoDB thành công trên Railway!"))
-  .catch(err => console.error("❌ Lỗi kết nối MongoDB:", err));
-
-// ĐỊNH NGHĨA SCHEMA TỰ ĐỘNG XÓA SAU 7 NGÀY (TTL INDEX)
-const AdminLogSchema = new mongoose.Schema({
-    productName: { type: String, required: true },
-    productUrl: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-// Cấu hình TTL Index: Tự động xóa bản ghi sau 7 ngày (7 * 24 * 60 * 60 = 604800 giây)
-AdminLogSchema.index({ "createdAt": 1 }, { expireAfterSeconds: 604800 });
-const AdminLog = mongoose.model('AdminLog', AdminLogSchema);
 
 // CẤU HÌNH CỦA BẠN
 const MY_AFFILIATE_ID = "17344490003"; 
 
 // BỘ NHỚ ĐỆM GIẢI MÃ LINK: Ánh xạ từ link ngắn của khách sang link dài lấy từ Addlivetag
-// Thêm bộ nhớ tạm lưu tên sản phẩm để route split-link có thể truy xuất ghi log chính xác
 const resolvedLinksCache = {};
-const productNameCache = {};
-
-// ==================== KHÔNG GIAN BẢO MẬT ADMIN ====================
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "17042005"; // Hãy đổi mật khẩu này khi lên môi trường chạy thật hoặc qua biến môi trường Railway
-const ADMIN_TOKEN = "VLU_SECRET_SESSION_TOKEN_2026"; // Token xác thực phiên đăng nhập tạm thời
-
-// Middleware kiểm tra quyền truy cập hợp lệ trước khi trả dữ liệu nhạy cảm
-const requireAdminAuth = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    if (authHeader === `Bearer ${ADMIN_TOKEN}`) {
-        next();
-    } else {
-        res.status(401).json({ success: false, message: "Yêu cầu đăng nhập quản trị viên!" });
-    }
-};
-
-// API: Xử lý đăng nhập hệ thống Admin
-app.post('/api/admin/login', (req, res) => {
-    const { username, password } = req.body;
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        return res.json({ success: true, token: ADMIN_TOKEN });
-    }
-    return res.json({ success: false, message: "Sai tài khoản hoặc mật khẩu!" });
-});
 
 // ==================== ENDPOINT: BỐC VOUCHER ĐỘNG TỪ SALESOC ====================
 app.get('/api/vouchers', async (req, res) => {
     try {
-        // Gọi trực tiếp đến API thực tế của Salesoc kèm header bypass Cloudflare
         const response = await axios.get('https://salesoc.vn/api/vouchers', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
                 'Origin': 'https://salesoc.vn',
                 'Referer': 'https://salesoc.vn/',
                 'Accept': 'application/json, text/plain, */*',
-                'Cache-Control': 'no-cache', // Ép server trả về data mới nhất, không nhận 304 Not Modified từ browser cache
+                'Cache-Control': 'no-cache', 
                 'Pragma': 'no-cache'
             },
             timeout: 6000
         });
 
-        // Kiểm tra cấu trúc mảng dữ liệu trả về từ đối tác
         if (response.data && Array.isArray(response.data)) {
             return res.json({
                 success: true,
@@ -89,7 +45,7 @@ app.get('/api/vouchers', async (req, res) => {
     }
 });
 
-// ROUTE MỚI: Đứng trung gian bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
+// ROUTE TRUNG GIAN: Bốc thông tin sản phẩm và lọc bỏ hoa hồng trước khi gửi về client
 app.post('/api/product-info', async (req, res) => {
     try {
         const { url } = req.body;
@@ -108,11 +64,6 @@ app.post('/api/product-info', async (req, res) => {
             if (info && info.productLink) {
                 resolvedLinksCache[url.trim()] = info.productLink;
                 console.log(`🎯 Đã lưu cache link dài từ Addlivetag: ${info.productLink}`);
-            }
-
-            // Lưu tên sản phẩm vào bộ nhớ đệm phục vụ cho API split-link ghi nhận thống kê
-            if (info && info.productName) {
-                productNameCache[url.trim()] = info.productName;
             }
             
             // TUYỆT ĐỐI KHÔNG TRẢ VỀ: commission, sellerComFinal, shopeeComFinal để giấu khách hoàn toàn
@@ -139,8 +90,6 @@ app.post('/api/split-link', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vui lòng cung cấp link Shopee' });
         }
 
-        // BƯỚC 1: Đấu API sang Salesoc kèm cơ chế try/catch bọc riêng nhằm tránh lỗi Unexpected end of JSON input
-        // GIỮ NGUYÊN 100% KHÔNG THAY ĐỔI LOGIC VÀ BIẾN SỐ ĐỂ TRÁNH LỖI TIMEOUT
         try {
             const salesocResponse = await axios.post('https://salesoc.vn/api/convert-with-shelf', {
                 url: url,
@@ -152,56 +101,41 @@ app.post('/api/split-link', async (req, res) => {
                     'Origin': 'https://salesoc.vn',
                     'Referer': 'https://salesoc.vn/'
                 },
-                timeout: 8000 // TĂNG LÊN 8 GIÂY: Tránh tình trạng mạng kết nối quốc tế từ Railway về VN bị nghẽn
+                timeout: 8000 
             });
 
-            // Kiểm tra kỹ cấu trúc dữ liệu trả về từ Salesoc trước khi bóc tách
             if (salesocResponse && salesocResponse.data && salesocResponse.data.success === true) {
                 const data = salesocResponse.data;
                 
-                // ==================== KHU VỰC DEBUG HỆ THỐNG ====================
                 console.log("\n=================== SALESOC DATA DEBUG ===================");
                 console.log("👉 Link bạn nhập vào (url):", url);
                 console.log("👉 Link rút gọn Shopee (affipadShortUrl):", data.affipadShortUrl || "N/A (RỖNG)");
                 console.log("👉 Link Facebook ngắn (shortFacebookAffiliateUrl):", data.shortFacebookAffiliateUrl || "N/A (RỖNG)");
                 console.log("==========================================================\n");
-                // ================================================================
 
                 // TỐI ƯU LUỒNG BƯỚC 2: Sử dụng link gốc dài trị lỗi OOPS màn hình Shopee
                 const finalUrlForStep2 = resolvedLinksCache[url.trim()] || url;
                 const step2AffiliateLink = `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(finalUrlForStep2)}&affiliate_id=${MY_AFFILIATE_ID}`;
 
-                // TỰ ĐỘNG LƯU LOG THỐNG KÊ VÀO MONGODB PHỤC VỤ TRANG ADMIN
-                const loggedProductName = productNameCache[url.trim()] || "Sản phẩm Shopee (Chưa đồng bộ tên)";
-                await AdminLog.create({
-                    productName: loggedProductName,
-                    productUrl: url.trim()
-                }).catch(dbErr => console.log("⚠️ Lỗi ghi nhận log MongoDB:", dbErr.message));
-
                 // KIỂM TRA ĐIỀU KIỆN YOUTUBE SHOPPING ĐỂ XỬ LÝ ẨN/HIỆN NÚT
                 const hasYoutube = data.hasYoutubeVoucher !== false;
 
-                // TRẢ VỀ ĐẦY ĐỦ CÁC LUỒNG ĐỂ FRONTEND RENDERING ĐỘNG BƯỚC 1 VÀ BƯỚC 2
                 return res.json({
                     success: true,
-                    // Nếu không có YTB, tự động lấy trường dự phòng shortFacebookAffiliateUrl hoặc shortAffiliateUrl
                     fbLink: data.affipadShortUrl || data.shortFacebookAffiliateUrl || data.shortAffiliateUrl || "",
-                    // Nếu không có YTB, trả chuỗi trống để Frontend tự động ẩn nút đi hoàn toàn
                     ytbLink: hasYoutube ? (data.affiliateUrl || "") : "",
                     igLink: data.shortInstagramAffiliateUrl || data.instagramAffiliateUrl || "",
                     step2: step2AffiliateLink
                 });
             } else {
-                // Thất bại trong việc lấy dữ liệu thành công từ Salesoc -> Trả thông báo lỗi trực tiếp
                 return res.json({
                     success: false,
                     message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
                 });
             }
         } catch (apiErr) {
-            console.log('⚠️ Không lấy được voucher từ Salesoc (Có thể bị chặn Cloudflare/CORS):', apiErr.message);
+            console.log('⚠️ Không lấy được voucher từ Salesoc:', apiErr.message);
             
-            // CHẶN BÁO LỖI: Không gán link gốc nữa mà trả thẳng thông điệp lỗi cho client
             return res.json({
                 success: false,
                 message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
@@ -214,72 +148,6 @@ app.post('/api/split-link', async (req, res) => {
             success: false, 
             message: "Tạm hết mã giảm giá hoặc website đang quá tải, vui lòng thử lại sau 5s"
         });
-    }
-});
-
-// ==================== ENDPOINT MỚI 1: TRẢ VỀ SỐ LIỆU TỔNG QUAN ADMIN (CÓ BẢO MẬT) ====================
-app.get('/api/admin/overview', requireAdminAuth, async (req, res) => {
-    try {
-        const totalClicks = await AdminLog.countDocuments();
-        const topProducts = await AdminLog.aggregate([
-            { $group: { _id: "$productName", count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: 10 }
-        ]);
-
-        return res.json({
-            success: true,
-            totalClicks,
-            topProducts
-        });
-    } catch (err) {
-        return res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-// ==================== ENDPOINT MỚI 2: NHẬT KÝ CHI TIẾT CÓ XỬ LÝ PHÂN TRANG (CÓ BẢO MẬT) ====================
-app.get('/api/admin/logs', requireAdminAuth, async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10; // Cố định hiển thị 10 dòng trên một trang
-        const skip = (page - 1) * limit;
-
-        const totalLogs = await AdminLog.countDocuments();
-        const logs = await AdminLog.find()
-                                   .sort({ createdAt: -1 })
-                                   .skip(skip)
-                                   .limit(limit);
-
-        const totalPages = Math.ceil(totalLogs / limit);
-
-        return res.json({
-            success: true,
-            logs,
-            pagination: {
-                currentPage: page,
-                totalPages: totalPages,
-                totalLogs: totalLogs,
-                limit: limit
-            }
-        });
-    } catch (err) {
-        return res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-// ==================== ENDPOINT MỚI 3: XÓA TOÀN BỘ NHẬT KÝ HỆ THỐNG (CÓ BẢO MẬT) ====================
-app.delete('/api/admin/clear-logs', requireAdminAuth, async (req, res) => {
-    try {
-        // Xóa hoàn toàn tất cả các bản ghi log trong MongoDB
-        await AdminLog.deleteMany({});
-        
-        return res.json({
-            success: true,
-            message: "Đã xóa toàn bộ nhật ký hệ thống thành công!"
-        });
-    } catch (err) {
-        console.log("⚠️ Lỗi dọn dẹp dữ liệu Admin:", err.message);
-        return res.status(500).json({ success: false, message: err.message });
     }
 });
 
