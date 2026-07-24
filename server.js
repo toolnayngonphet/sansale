@@ -6,6 +6,16 @@ const mongoose = require('mongoose'); // Tích hợp Mongoose để kết nối 
 const app = express();
 
 app.use(cors()); // Kích hoạt CORS cho phép mọi nguồn kết nối đến API này
+
+// ==================== CHUYỂN HƯỚNG TỰ ĐỘNG SANG NETLIFY ====================
+// Bất kỳ truy cập web nào (không phải gọi /api) đều tự chuyển sang Netlify
+app.use((req, res, next) => {
+    if (!req.path.startsWith('/api')) {
+        return res.redirect(301, 'https://shopeevip.netlify.app' + req.originalUrl);
+    }
+    next();
+});
+
 app.use(express.json());
 // Phục vụ giao diện frontend nằm trong thư mục public
 app.use(express.static(path.join(__dirname, 'public')));
